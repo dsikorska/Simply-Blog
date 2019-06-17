@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplyBlog.Core", "SimplyBlog.Core\SimplyBlog.Core.csproj", "{AACEE8E0-A032-4BFE-B1C3-0400A5313CA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplyBlog.Website", "SimplyBlog.Website\SimplyBlog.Website.csproj", "{4E9DE0F5-E2CA-4D41-9333-04A46944B876}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplyBlog.Tests", "SimplyBlog.Tests\SimplyBlog.Tests.csproj", "{232B3C9E-8284-4DBD-ABED-B5CF2DDE2EC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{AACEE8E0-A032-4BFE-B1C3-0400A5313CA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AACEE8E0-A032-4BFE-B1C3-0400A5313CA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AACEE8E0-A032-4BFE-B1C3-0400A5313CA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E9DE0F5-E2CA-4D41-9333-04A46944B876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E9DE0F5-E2CA-4D41-9333-04A46944B876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E9DE0F5-E2CA-4D41-9333-04A46944B876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E9DE0F5-E2CA-4D41-9333-04A46944B876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{232B3C9E-8284-4DBD-ABED-B5CF2DDE2EC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{232B3C9E-8284-4DBD-ABED-B5CF2DDE2EC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{232B3C9E-8284-4DBD-ABED-B5CF2DDE2EC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{232B3C9E-8284-4DBD-ABED-B5CF2DDE2EC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
