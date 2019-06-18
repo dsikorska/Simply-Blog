@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
 namespace SimplyBlog.Core.Concrete
 {
-    public class XmlContext : IDisposable
+    public class XmlContext
     {
         private readonly string _xmlFileLocation;
 
@@ -44,23 +43,6 @@ namespace SimplyBlog.Core.Concrete
                 }
             }
             return entities.ToList();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this != null)
-                {
-                    this.Dispose();
-                }
-            }
         }
     }
 }
