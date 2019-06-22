@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Models;
@@ -18,6 +20,7 @@ namespace SimplyBlog.Website.Controllers
             blogRepository = repository;
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("all")]
         public ActionResult<IEnumerable<Post>> GetAllPosts()
         {
