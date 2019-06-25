@@ -20,7 +20,6 @@ namespace SimplyBlog.Website.Controllers
             blogRepository = repository;
         }
 
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("all")]
         public ActionResult<IEnumerable<Post>> GetAllPosts()
         {
@@ -46,6 +45,7 @@ namespace SimplyBlog.Website.Controllers
             return Ok(blogRepository.GetAllComments(id));
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("new")]
         public ActionResult CreatePost(Post post)
         {
@@ -58,6 +58,7 @@ namespace SimplyBlog.Website.Controllers
             return Ok();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPatch("{id:int}")]
         public ActionResult EditPost(Post post)
         {
@@ -83,6 +84,7 @@ namespace SimplyBlog.Website.Controllers
             return NotFound();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id:int}")]
         public ActionResult DeletePost(int id)
         {
@@ -116,6 +118,7 @@ namespace SimplyBlog.Website.Controllers
             return NotFound();
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{postId:int}/{id:int}")]
         public ActionResult DeleteComment(int postId, int id)
         {

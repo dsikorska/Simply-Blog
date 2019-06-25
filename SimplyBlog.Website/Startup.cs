@@ -37,30 +37,17 @@ namespace SimplyBlog.Website
             services.AddMvc()
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
 
-            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
-            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //.AddCookie(options =>
-            //{
-            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            //    options.Cookie.Name = "AdminAuth";
-            //    options.Cookie.Expiration = new TimeSpan(3, 0, 0, 0);
-            //    options.ExpireTimeSpan = new TimeSpan(3, 0, 0, 0);
-            //    options.LoginPath = new PathString("/api/admin/login");
-            //    options.LogoutPath = new PathString("/api/admin/logout");
-            //});
-
-            // configure jwt authentication
             byte[] key = Encoding.ASCII.GetBytes(Configuration.GetValue<string>("secret"));
-            services.AddAuthentication(x =>
+            services.AddAuthentication(options =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            .AddJwtBearer(x =>
+            .AddJwtBearer(options =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
