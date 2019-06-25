@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SimplyBlog.Website.Models;
 
 namespace SimplyBlog.Website.Controllers
@@ -25,6 +27,13 @@ namespace SimplyBlog.Website.Controllers
             }
 
             return Ok(token);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("hash")]
+        public ActionResult GetHash(string input)
+        {
+            return Ok(AppService.HashPassword(input));
         }
     }
 }

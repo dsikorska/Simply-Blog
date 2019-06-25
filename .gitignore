@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /SimplyBlog.Website/Post.xml
+/SimplyBlog.Website/Data

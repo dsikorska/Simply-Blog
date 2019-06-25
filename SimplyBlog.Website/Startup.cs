@@ -37,6 +37,8 @@ namespace SimplyBlog.Website
             services.AddMvc()
                 .SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
 
+            // Ref: https://jasonwatmore.com/post/2018/08/14/aspnet-core-21-jwt-authentication-tutorial-with-example-api
+            // Ref: https://www.blinkingcaret.com/2017/09/06/secure-web-api-in-asp-net-core/
             byte[] key = Encoding.ASCII.GetBytes(Configuration.GetValue<string>("secret"));
             services.AddAuthentication(options =>
             {
