@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplyBlog.Core", "SimplyBlog.Core\SimplyBlog.Core.csproj", "{AACEE8E0-A032-4BFE-B1C3-0400A5313CA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimplyBlog.Core", "SimplyBlog.Core\SimplyBlog.Core.csproj", "{AACEE8E0-A032-4BFE-B1C3-0400A5313CA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplyBlog.Website", "SimplyBlog.Website\SimplyBlog.Website.csproj", "{4E9DE0F5-E2CA-4D41-9333-04A46944B876}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimplyBlog.Website", "SimplyBlog.Website\SimplyBlog.Website.csproj", "{4E9DE0F5-E2CA-4D41-9333-04A46944B876}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimplyBlog.Tests", "SimplyBlog.Tests\SimplyBlog.Tests.csproj", "{232B3C9E-8284-4DBD-ABED-B5CF2DDE2EC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimplyBlog.Tests", "SimplyBlog.Tests\SimplyBlog.Tests.csproj", "{232B3C9E-8284-4DBD-ABED-B5CF2DDE2EC8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{485D6C69-45C1-4871-9C31-0B3B060D8641}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
