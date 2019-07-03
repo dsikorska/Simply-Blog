@@ -1,0 +1,13 @@
+.Header {
+  padding: 30px;
+  font-size: 40px;
+  text-align: center;
+  background: white;
+}
+
+.Footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}

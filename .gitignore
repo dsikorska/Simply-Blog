@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /SimplyBlog.Website/Post.xml
 /SimplyBlog.Website/Data
+Server/SimplyBlog.Website/Properties/PublishProfiles/simplyblog - Web Deploy.pubxml
