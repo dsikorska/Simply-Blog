@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfPost xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Post>
+    <Id>1</Id>
+    <Title>new</Title>
+    <Content>&lt;b&gt;POPPPPPPPPPPPPPPOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO&lt;/b&gt;</Content>
+    <Created>2019-06-18T10:27:04.6603919Z</Created>
+    <LastModified>2019-06-18T10:34:05.9198774Z</LastModified>
+    <Categories>
+      <string>aaaaaa</string>
+    </Categories>
+    <Comments />
+  </Post>
+  <Post>
+    <Id>0</Id>
+    <Title>def</Title>
+    <Content>cont</Content>
+    <Created>2019-06-21T12:33:20.0235638Z</Created>
+    <LastModified>2019-06-21T12:33:20.0235638Z</LastModified>
+    <Categories />
+    <Comments />
+  </Post>
+</ArrayOfPost>
