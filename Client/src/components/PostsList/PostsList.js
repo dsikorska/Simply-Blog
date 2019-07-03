@@ -2,23 +2,30 @@ import React, { Component } from 'react';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 import Post from './Post/Post';
 import Axios from 'axios';
+import Spinner from '../UI/Spinner/Spinner';
 
 class PostsList extends Component {
     state = {
-        posts: null
+        posts: null,
+        loading: false
     }
 
     componentDidMount() {
         if (!this.state.posts) {
             Axios.get('https://simplyblog.azurewebsites.net/api/blog/all')
                 .then(response => {
-                    this.setState({ posts: response.data });
+                    this.setState({ posts: response.data, loading: false });
                 });
+            this.setState({ loading: true });
         }
     }
 
     render() {
-        let posts = <p>Currently no posts added!</p>;
+        let posts = <p>No posts!</p>
+
+        if (this.state.loading) {
+            posts = <Spinner />
+        }
 
         if (this.state.posts) {
             posts = this.state.posts.map(post => {
