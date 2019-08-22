@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using SimplyBlog.Core.Models;
@@ -21,7 +22,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void GetAllPosts()
         {
-            ActionResult<IEnumerable<Post>> result = blogController.GetAllPosts();
+            ActionResult<IEnumerable<Post>> result = blogController.GetPosts();
 
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
             Assert.IsNotNull((result.Result as OkObjectResult).Value);
@@ -46,20 +47,20 @@ namespace SimplyBlog.Tests
         }
 
         [Test]
-        public void CreatePost_NotValidModel_ReturnsBadRequest()
+        public async Task CreatePost_NotValidModel_ReturnsBadRequest()
         {
             blogController.ModelState.AddModelError("", "");
 
-            ActionResult result = blogController.CreatePost(new Post());
+            ActionResult result = await blogController.CreatePost(new Post());
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.IsNotNull((result as BadRequestObjectResult).Value);
         }
 
         [Test]
-        public void CreatePost_ValidModel_ReturnsOk()
+        public async Task CreatePost_ValidModel_ReturnsOk()
         {
-            ActionResult result = blogController.CreatePost(new Post());
+            ActionResult result = await blogController.CreatePost(new Post());
 
             Assert.IsInstanceOf<OkResult>(result);
         }
