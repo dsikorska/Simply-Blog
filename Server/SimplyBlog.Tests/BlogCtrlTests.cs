@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void GetAllPosts()
         {
-            ActionResult<IEnumerable<Post>> result = blogController.GetPosts();
+            ActionResult<IEnumerable<Post>> result = blogController.GetPosts(0);
 
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
             Assert.IsNotNull((result.Result as OkObjectResult).Value);
@@ -31,7 +32,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void GetPost()
         {
-            ActionResult<Post> result = blogController.GetPost(0);
+            ActionResult<Post> result = blogController.GetPost(Guid.NewGuid());
 
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
             Assert.IsNotNull((result.Result as OkObjectResult).Value);
@@ -40,7 +41,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void GetAllPostComments()
         {
-            ActionResult<IEnumerable<Comment>> result = blogController.GetAllPostComments(0);
+            ActionResult<IEnumerable<Comment>> result = blogController.GetAllPostComments(Guid.NewGuid());
 
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
             Assert.IsNotNull((result.Result as OkObjectResult).Value);
@@ -87,7 +88,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void DeletePost()
         {
-            ActionResult result = blogController.DeletePost(0);
+            ActionResult result = blogController.DeletePost(Guid.NewGuid());
 
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -97,7 +98,7 @@ namespace SimplyBlog.Tests
         {
             blogController.ModelState.AddModelError("", "");
 
-            ActionResult result = blogController.CreateComment(0, new Comment());
+            ActionResult result = blogController.CreateComment(Guid.NewGuid(), new Comment());
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.IsNotNull((result as BadRequestObjectResult).Value);
@@ -106,17 +107,17 @@ namespace SimplyBlog.Tests
         [Test]
         public void CreateComment_ValidModel_ReturnsOk()
         {
-            ActionResult result = blogController.CreateComment(0, new Comment());
+            ActionResult result = blogController.CreateComment(Guid.NewGuid(), new Comment());
 
             Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]
-        public void DeleteComment()
+        public void DeleteComment_BadId_ReturnsNotFound()
         {
-            ActionResult result = blogController.DeleteComment(0, 0);
+            ActionResult result = blogController.DeleteComment(Guid.NewGuid(), Guid.NewGuid());
 
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
     }
 }
