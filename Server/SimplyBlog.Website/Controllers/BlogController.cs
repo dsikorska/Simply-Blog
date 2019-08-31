@@ -28,7 +28,7 @@ namespace SimplyBlog.Website.Controllers
             return Ok(blogRepository.GetPosts(page));
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         public ActionResult<Post> GetPost(Guid id)
         {
             Post post = blogRepository.GetById(id);
@@ -62,7 +62,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id}")]
         public ActionResult EditPost(Post post)
         {
             if (!ModelState.IsValid)
@@ -88,7 +88,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id}")]
         public ActionResult DeletePost(Guid id)
         {
             Post post = blogRepository.GetById(id);
@@ -102,7 +102,7 @@ namespace SimplyBlog.Website.Controllers
             return NotFound();
         }
 
-        [HttpPost("{id:int}/new")]
+        [HttpPost("{id}/new")]
         public ActionResult CreateComment(Guid id, Comment comment)
         {
             if (!ModelState.IsValid)
@@ -122,7 +122,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete("{postId:int}/{id:int}")]
+        [HttpDelete("{postId}/{id}")]
         public ActionResult DeleteComment(Guid postId, Guid id)
         {
             Post post = blogRepository.GetById(postId);
