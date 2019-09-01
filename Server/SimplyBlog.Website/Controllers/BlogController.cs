@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimplyBlog.Core.Abstract;
+using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Website.Controllers
@@ -20,14 +22,14 @@ namespace SimplyBlog.Website.Controllers
             blogRepository = repository;
         }
 
-        [HttpGet("all")]
-        public ActionResult<IEnumerable<Post>> GetAllPosts()
+        [HttpGet("posts/{page:int}")]
+        public ActionResult<IEnumerable<Post>> GetPosts(int page)
         {
-            return Ok(blogRepository.GetAll());
+            return Ok(blogRepository.GetPosts(page));
         }
 
-        [HttpGet("{id:int}")]
-        public ActionResult<Post> GetPost(int id)
+        [HttpGet("{id}")]
+        public ActionResult<Post> GetPost(Guid id)
         {
             Post post = blogRepository.GetById(id);
 
@@ -39,27 +41,28 @@ namespace SimplyBlog.Website.Controllers
             return NotFound();
         }
 
-        [HttpGet("comments")]
-        public ActionResult<IEnumerable<Comment>> GetAllPostComments(int id)
+        [HttpGet("comments/{id}")]
+        public ActionResult<IEnumerable<Comment>> GetAllPostComments(Guid id)
         {
             return Ok(blogRepository.GetAllComments(id));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("new")]
-        public ActionResult CreatePost(Post post)
+        public async Task<ActionResult> CreatePost([FromForm]Post post)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(post);
             }
 
+            post.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
             blogRepository.Create(post);
             return Ok();
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPatch("{id:int}")]
+        [HttpPatch("{id}")]
         public ActionResult EditPost(Post post)
         {
             if (!ModelState.IsValid)
@@ -85,8 +88,8 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete("{id:int}")]
-        public ActionResult DeletePost(int id)
+        [HttpDelete("{id}")]
+        public ActionResult DeletePost(Guid id)
         {
             Post post = blogRepository.GetById(id);
 
@@ -99,8 +102,8 @@ namespace SimplyBlog.Website.Controllers
             return NotFound();
         }
 
-        [HttpPost("{id:int}/new")]
-        public ActionResult CreateComment(int id, Comment comment)
+        [HttpPost("{id}/new")]
+        public ActionResult CreateComment(Guid id, Comment comment)
         {
             if (!ModelState.IsValid)
             {
@@ -119,8 +122,8 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete("{postId:int}/{id:int}")]
-        public ActionResult DeleteComment(int postId, int id)
+        [HttpDelete("{postId}/{id}")]
+        public ActionResult DeleteComment(Guid postId, Guid id)
         {
             Post post = blogRepository.GetById(postId);
             Comment comment = post.Comments.Select(x => x).FirstOrDefault(x => x.Id == id);

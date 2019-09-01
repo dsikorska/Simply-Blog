@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Core.Concrete
 {
-    public class Repository<T> : IRepository<T> where T : Entity<int>
+    public class Repository<T> : IRepository<T> where T : Entity<Guid>
     {
         private readonly XmlContext _context;
         private IList<T> _entities;
@@ -41,7 +42,7 @@ namespace SimplyBlog.Core.Concrete
             return XmlEntities;
         }
 
-        public virtual T GetById(int id)
+        public virtual T GetById(Guid id)
         {
             return Entities.FirstOrDefault(x => x.Id.Equals(id));
         }

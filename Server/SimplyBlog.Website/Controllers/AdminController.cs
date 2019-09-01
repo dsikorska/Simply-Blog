@@ -30,10 +30,11 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("hash")]
-        public ActionResult GetHash(string input)
+        [HttpPost("changePassword")]
+        public ActionResult ChangePassword(ChangePasswordModel model)
         {
-            return Ok(AppService.HashPassword(input));
+            service.ChangePassword(model.NewPassword);
+            return Ok();
         }
     }
 }

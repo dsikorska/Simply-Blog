@@ -21,7 +21,7 @@ namespace SimplyBlog.Website
         {
             if (!ValidateUser(username, password))
             {
-                return null;
+                throw new ArgumentException("Username or password is not valid");
             }
 
             byte[] key = Encoding.ASCII.GetBytes(configuration.GetValue<string>("secret"));
@@ -60,21 +60,7 @@ namespace SimplyBlog.Website
             return username == name && validPassword;
         }
 
-        //Ref: https://medium.com/@mehanix/lets-talk-security-salted-password-hashing-in-c-5460be5c3aae
-        public static string HashPassword(string password)
-        {
-            byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
-            Rfc2898DeriveBytes encryption = new Rfc2898DeriveBytes(password, salt, 10000);
-            byte[] hashed = encryption.GetBytes(20);
-            byte[] hashBytes = new byte[36];
-            Array.Copy(salt, 0, hashBytes, 0, 16);
-            Array.Copy(hashed, 0, hashBytes, 16, 20);
-
-            return Convert.ToBase64String(hashBytes);
-        }
-
-        public static bool VerifyPassword(string hash, string password)
+        private static bool VerifyPassword(string hash, string password)
         {
             byte[] hashBytes = Convert.FromBase64String(hash);
             byte[] salt = new byte[16];
@@ -93,6 +79,26 @@ namespace SimplyBlog.Website
             }
 
             return valid;
+        }
+
+        public void ChangePassword(string newPassword)
+        {
+            string newHashedPassword = HashPassword(newPassword);
+            //TODO
+        }
+
+        //Ref: https://medium.com/@mehanix/lets-talk-security-salted-password-hashing-in-c-5460be5c3aae
+        private static string HashPassword(string password)
+        {
+            byte[] salt;
+            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
+            Rfc2898DeriveBytes encryption = new Rfc2898DeriveBytes(password, salt, 10000);
+            byte[] hashed = encryption.GetBytes(20);
+            byte[] hashBytes = new byte[36];
+            Array.Copy(salt, 0, hashBytes, 0, 16);
+            Array.Copy(hashed, 0, hashBytes, 16, 20);
+
+            return Convert.ToBase64String(hashBytes);
         }
     }
 }

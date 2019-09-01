@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace SimplyBlog.Core.Models
 {
-    public class Post : Entity<int>
+    public class Post : Entity<Guid>
     {
         [Required]
         public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        [XmlIgnore]
+        public IFormFile Image { get; set; }
+
+        public Guid? ImageGuid { get; set; }
 
         [Required]
         public string Content { get; set; }
