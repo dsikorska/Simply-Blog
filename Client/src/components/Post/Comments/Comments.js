@@ -22,6 +22,17 @@ class Comments extends React.Component {
         }
     }
 
+    newCommentHandler = (e) => {
+        e.preventDefault();
+        Axios.post('/blog/' + this.props.id + '/new', { email: this.refs.email.nodeValue, content: this.refs.content.value, author: this.refs.email.value, postId: this.props.id })
+            .then(response => {
+                console.log(response);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
     render() {
         let comments = <p>No comments!</p>
 
@@ -43,6 +54,11 @@ class Comments extends React.Component {
 
         return (
             <div>
+                <form onSubmit={this.newCommentHandler}>
+                    <input type="email" placeholder="Email (required)" name="email" ref="email" required></input>
+                    <textarea placeholder="Your text goes here." name="content" ref="content" required></textarea>
+                    <button type="submit">Save</button>
+                </form>
                 {comments}
             </div>
         );
