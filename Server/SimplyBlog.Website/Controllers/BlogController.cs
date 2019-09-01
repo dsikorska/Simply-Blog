@@ -41,7 +41,7 @@ namespace SimplyBlog.Website.Controllers
             return NotFound();
         }
 
-        [HttpGet("comments")]
+        [HttpGet("comments/{id}")]
         public ActionResult<IEnumerable<Comment>> GetAllPostComments(Guid id)
         {
             return Ok(blogRepository.GetAllComments(id));

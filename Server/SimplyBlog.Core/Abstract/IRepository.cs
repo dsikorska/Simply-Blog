@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace SimplyBlog.Core.Abstract
 {
@@ -7,7 +6,6 @@ namespace SimplyBlog.Core.Abstract
     {
         void Create(T entity);
         void Delete(T entity);
-        IEnumerable<T> GetAll();
         T GetById(Guid id);
         void Update(T entity);
     }
