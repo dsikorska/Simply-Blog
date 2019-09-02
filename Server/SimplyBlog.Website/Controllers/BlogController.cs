@@ -41,6 +41,12 @@ namespace SimplyBlog.Website.Controllers
             return NotFound();
         }
 
+        [HttpGet("image/{id}")]
+        public ActionResult<string> GetImage(Guid id)
+        {
+            return Ok(ImageHandler.GetImageUri(id));
+        }
+
         [HttpGet("comments/{id}")]
         public ActionResult<IEnumerable<Comment>> GetAllPostComments(Guid id)
         {

@@ -21,7 +21,7 @@ namespace SimplyBlog.Core.Concrete
 
         public IEnumerable<Post> GetPosts(int page)
         {
-            return Entities.Skip(10 * page).Take(10);
+            return Entities.Skip(5 * page).Take(5);
         }
 
         public IEnumerable<Comment> GetAllComments(Guid id)
@@ -32,6 +32,7 @@ namespace SimplyBlog.Core.Concrete
         public void AddComment(Post post, Comment comment)
         {
             comment.PostId = post.Id;
+            comment.Id = Guid.NewGuid();
             post.Comments.Add(comment);
             Update(post);
         }

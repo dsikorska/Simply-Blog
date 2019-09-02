@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace SimplyBlog.Core.Models
+namespace SimplyBlog.Core.Models.DTOs
 {
-    public class Post : Entity<Guid>
+    public class ReadPostDto
     {
-        [Required]
+        public Guid Id { get; set; }
+
         public string Title { get; set; }
 
-        public Guid? ImageGuid { get; set; }
+        public string ImageUri { get; set; }
 
-        [Required]
         public string Content { get; set; }
 
         public DateTime Created { get; set; } = DateTime.UtcNow;

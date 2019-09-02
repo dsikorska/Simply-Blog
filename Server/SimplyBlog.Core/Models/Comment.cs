@@ -7,9 +7,9 @@ namespace SimplyBlog.Core.Models
     {
         public Guid PostId { get; set; }
 
-        [Required]
         public string Author { get; set; }
 
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 

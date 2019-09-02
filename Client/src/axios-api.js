@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 const instance = Axios.create({
-    baseURL: 'https://simplyblog.azurewebsites.net/api/'
+    baseURL: 'https://localhost:5001/api/'
 });
-
+// 'https://simplyblog.azurewebsites.net/api/'
 export default instance;

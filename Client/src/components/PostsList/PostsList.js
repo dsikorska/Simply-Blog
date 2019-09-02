@@ -39,7 +39,8 @@ class PostsList extends Component {
                     id={post.id}
                     title={post.title}
                     date={fullDate.toDateString()}
-                    content={post.content} />
+                    content={post.content}
+                    image={post.image} />
             });
         }
 
