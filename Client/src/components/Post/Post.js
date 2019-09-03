@@ -13,7 +13,7 @@ class Post extends Component {
     componentDidMount() {
         if (!this.state.post) {
             this.setState({ loading: true });
-            Axios.get('blog/' + this.props.match.params.id)
+            Axios.get('/api/blog/' + this.props.match.params.id)
                 .then(response => {
                     this.setState({ post: response.data, loading: false });
                 })
@@ -29,7 +29,7 @@ class Post extends Component {
                 <div className="card" >
                     <h2>{this.state.post.title}</h2>
                     <h5>{this.state.post.date}</h5>
-                    <img src={this.state.post.image} alt={this.state.post.title} style={{ height: '200px' }} />
+                    <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" style={{ height: '200px' }} />
                     <p>{this.state.post.content}</p>
                 </div>
                 <Comments id={this.state.post.id} />

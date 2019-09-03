@@ -13,7 +13,7 @@ class Comments extends React.Component {
     componentDidMount() {
         if (!this.state.comments) {
             this.setState({ loading: true });
-            Axios.get('blog/comments/' + this.props.id)
+            Axios.get('/api/blog/comments/' + this.props.id)
                 .then(response => {
                     this.setState({ comments: response.data, loading: false });
                 })
@@ -24,7 +24,7 @@ class Comments extends React.Component {
     }
     //todo auth
     onDeleteCommentHandler = (id) => {
-        Axios.delete('blog/' + this.props.id + '/' + id)
+        Axios.delete('/api/blog/' + this.props.id + '/' + id)
             .then(response => {
                 console.log(response);
             })

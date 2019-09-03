@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 
-namespace SimplyBlog.Core.Models.DTOs
+namespace SimplyBlog.Website.Models.DTOs
 {
-    public class EditPostDto
+    public class NewPostDto
     {
-        public Guid Id { get; set; }
-
         [Required]
         public string Title { get; set; }
 
@@ -17,8 +15,7 @@ namespace SimplyBlog.Core.Models.DTOs
         [Required]
         public string Content { get; set; }
 
-        public DateTime LastModified { get; set; } = DateTime.UtcNow;
+        public DateTime Created { get; set; } = DateTime.UtcNow;
         public List<string> Categories { get; set; } = new List<string>();
-        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

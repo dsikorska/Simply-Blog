@@ -7,16 +7,17 @@ namespace SimplyBlog.Core.Concrete
 {
     public static class ImageHandler
     {
-        private static string BasePath { get { return Path.Combine(Environment.CurrentDirectory, @"Data\Images"); } }
+        public static string BasePath { get { return Path.Combine(Environment.CurrentDirectory, @"Data"); } }
+        public static string PublicPath { get { return @"/static"; } }
 
         public static async Task<Guid?> SaveImageToFile(IFormFile image)
         {
             if (image?.Length > 0)
             {
                 Guid fileName = Guid.NewGuid();
-                DirectoryInfo destination = Directory.CreateDirectory(BasePath);
+                DirectoryInfo destination = Directory.CreateDirectory(Path.Combine(BasePath, "images"));
                 string filePath = Path.Combine(destination.FullName, fileName.ToString());
-                using (FileStream stream = new FileStream(filePath.ToString(), FileMode.Create))
+                using (FileStream stream = new FileStream(filePath.ToString() + ".jpeg", FileMode.Create))
                 {
                     await image.CopyToAsync(stream);
                     return fileName;
@@ -25,9 +26,14 @@ namespace SimplyBlog.Core.Concrete
             return null;
         }
 
-        public static string GetImageUri(Guid id)
+        public static string GetImageUri(Guid? id)
         {
-            return Path.Combine(BasePath, id.ToString());
+            if (!id.HasValue)
+            {
+                return null;
+            }
+
+            return Path.Combine(PublicPath, "images", id.ToString() + ".jpeg");
         }
     }
 }

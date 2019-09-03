@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
-import ShortPost from './Post/ShortPost';
+import ShortPost from './ShortPost/ShortPost';
 import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
 
@@ -13,7 +13,7 @@ class PostsList extends Component {
     componentDidMount() {
         if (!this.state.posts) {
             this.setState({ loading: true });
-            Axios.get('blog/posts/0')
+            Axios.get('/api/blog/posts/0')
                 .then(response => {
                     this.setState({ posts: response.data, loading: false });
                 })
@@ -40,7 +40,7 @@ class PostsList extends Component {
                     title={post.title}
                     date={fullDate.toDateString()}
                     content={post.content}
-                    image={post.image} />
+                    image={post.imageUri} />
             });
         }
 

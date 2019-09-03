@@ -1,14 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
+using SimplyBlog.Website.Mapping;
 
 namespace SimplyBlog.Website
 {
@@ -31,6 +34,10 @@ namespace SimplyBlog.Website
             services.AddTransient(x => new XmlContext(path));
             services.AddTransient<IBlogRepository, BlogRepository>();
             services.AddTransient(x => new AppService(Configuration));
+
+            MapperConfiguration mappingConfig = new MapperConfiguration(config => config.AddProfile(new DtosMappingProfile()));
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddCors();
 
@@ -64,6 +71,12 @@ namespace SimplyBlog.Website
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(ImageHandler.BasePath),
+                RequestPath = ImageHandler.PublicPath
+            });
+
             app.UseCors(policy =>
             {
                 policy.AllowAnyHeader();

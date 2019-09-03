@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
+using SimplyBlog.Website.Models.DTOs;
 
 namespace SimplyBlog.Website.Controllers
 {
@@ -16,35 +18,40 @@ namespace SimplyBlog.Website.Controllers
     public class BlogController : ControllerBase
     {
         private readonly IBlogRepository blogRepository;
+        private readonly IMapper mapper;
 
-        public BlogController(IBlogRepository repository)
+        public BlogController(IBlogRepository repository, IMapper map)
         {
             blogRepository = repository;
+            mapper = map;
         }
 
         [HttpGet("posts/{page:int}")]
         public ActionResult<IEnumerable<Post>> GetPosts(int page)
         {
-            return Ok(blogRepository.GetPosts(page));
+            IEnumerable<Post> posts = blogRepository.GetPosts(page);
+            IEnumerable<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x);
+            return Ok(mappedPosts);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Post> GetPost(Guid id)
+        [HttpGet("{id}/{shortPost:bool?}")]
+        public ActionResult<Post> GetPost(Guid id, bool shortPost = false)
         {
             Post post = blogRepository.GetById(id);
 
             if (post != null)
             {
-                return Ok(post);
+                if (shortPost)
+                {
+                    return Ok((ReadShortPostDto)post);
+                }
+                else
+                {
+                    return Ok((ReadPostDto)post);
+                }
             }
 
             return NotFound();
-        }
-
-        [HttpGet("image/{id}")]
-        public ActionResult<string> GetImage(Guid id)
-        {
-            return Ok(ImageHandler.GetImageUri(id));
         }
 
         [HttpGet("comments/{id}")]
@@ -55,21 +62,22 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("new")]
-        public async Task<ActionResult> CreatePost([FromForm]Post post)
+        public async Task<ActionResult> CreatePost([FromForm]NewPostDto post)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(post);
             }
 
-            post.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
-            blogRepository.Create(post);
+            Post newPost = mapper.Map<Post>(post);
+            newPost.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+            blogRepository.Create(newPost);
             return Ok();
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPatch("{id}")]
-        public ActionResult EditPost(Post post)
+        public async Task<ActionResult> EditPost(EditPostDto post)
         {
             if (!ModelState.IsValid)
             {
@@ -80,6 +88,7 @@ namespace SimplyBlog.Website.Controllers
 
             if (p != null)
             {
+                p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
                 p.Categories = post.Categories;
                 p.Content = post.Content;
                 p.Title = post.Title;

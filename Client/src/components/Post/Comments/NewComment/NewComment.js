@@ -10,7 +10,7 @@ class newComment extends React.Component {
             content: this.refs.content.value,
             postId: this.props.id
         }
-        Axios.post('/blog/' + this.props.id + '/new', comment)
+        Axios.post('/api/blog/' + this.props.id + '/new', comment)
             .then(response => {
                 //do nothing
             })
