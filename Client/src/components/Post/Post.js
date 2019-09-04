@@ -38,7 +38,6 @@ class Post extends Component {
         return (
             <Auxiliary>
                 {post}
-
             </Auxiliary>
         );
     }
