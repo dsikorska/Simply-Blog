@@ -3,6 +3,7 @@ import Axios from '../../../axios-api';
 import Spinner from './../../UI/Spinner/Spinner';
 import Comment from './Comment/Comment';
 import NewComment from './NewComment/NewComment';
+import { connect } from 'react-redux';
 
 class Comments extends React.Component {
     state = {
@@ -24,6 +25,10 @@ class Comments extends React.Component {
     }
     //todo auth
     onDeleteCommentHandler = (id) => {
+        if (!this.props.isLogged) {
+            return;
+        }
+
         Axios.delete('/api/blog/' + this.props.id + '/' + id)
             .then(response => {
                 console.log(response);
@@ -49,7 +54,8 @@ class Comments extends React.Component {
                     author={comment.author}
                     date={fullDate.toDateString()}
                     content={comment.content}
-                    onDelete={() => this.onDeleteCommentHandler(comment.id)} />
+                    onDelete={() => this.onDeleteCommentHandler(comment.id)}
+                    isLogged={this.props.isLogged} />
             });
         }
 
@@ -62,4 +68,10 @@ class Comments extends React.Component {
     }
 }
 
-export default Comments;
+const mapStateToProps = state => {
+    return {
+        isLogged: state.auth.isLogged
+    }
+}
+
+export default connect(mapStateToProps)(Comments);

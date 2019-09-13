@@ -29,11 +29,13 @@ export const logout = () => {
     };
 };
 
-export const checkAuthTimeout = (expirationTime) => {
+export const checkAuthTimeout = (expirationDate) => {
+    const expTime = expirationDate.getTime() - (new Date().getTime());
+
     return dispatch => {
         setTimeout(() => {
             dispatch(logout());
-        }, expirationTime * 1000);
+        }, expTime);
     };
 };
 
@@ -76,7 +78,7 @@ export const authCheckState = () => {
                 dispatch(logout());
             } else {
                 dispatch(authSuccess(token));
-                dispatch(checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000));
+                dispatch(checkAuthTimeout(expirationDate));
             }
         }
     };
