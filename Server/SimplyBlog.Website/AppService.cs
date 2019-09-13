@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Website
 {
@@ -17,36 +18,45 @@ namespace SimplyBlog.Website
             this.configuration = configuration;
         }
 
-        public string Authenticate(string username, string password)
+        public LoginResponse Authenticate(string username, string password)
         {
             if (!ValidateUser(username, password))
             {
-                throw new ArgumentException("Username or password is not valid");
+                return new LoginResponse()
+                {
+                    Error = "Invalid Username or Password."
+                };
             }
 
             byte[] key = Encoding.ASCII.GetBytes(configuration.GetValue<string>("secret"));
-            string token = GetSecurityToken(key, username);
+            LoginResponse response = GetSecurityToken(key, username);
 
-            return token;
+            return response;
         }
 
-        private string GetSecurityToken(byte[] key, string username)
+        private LoginResponse GetSecurityToken(byte[] key, string username)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
+            DateTime expDate = DateTime.UtcNow.AddDays(3);
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, username)
                 }),
-                Expires = DateTime.UtcNow.AddDays(3),
+                Expires = expDate,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+            LoginResponse response = new LoginResponse()
+            {
+                Token = tokenHandler.WriteToken(token),
+                ExpirationDate = expDate
+            };
 
-            return tokenHandler.WriteToken(token);
+            return response;
         }
 
         public bool ValidateUser(string username, string password)

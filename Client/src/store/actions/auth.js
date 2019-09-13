@@ -37,22 +37,20 @@ export const checkAuthTimeout = (expirationTime) => {
     };
 };
 
-export const auth = (email, password) => {
+export const auth = (username, password) => {
     return dispatch => {
         dispatch(authStart());
         const authData = {
-            email: email,
+            username: username,
             password: password
         };
 
         Axios.post('/api/admin/auth', authData)
             .then(response => {
-                console.log(response);
-                //const expirationDate = new Date(new Date().getTime() + response.data.expiresIn * 1000);
-                localStorage.setItem('token', response.data);
-                //localStorage.setItem('expirationDate', expirationDate);
-                dispatch(authSuccess(response.data));
-                //dispatch(checkAuthTimeout(response.data.expiresIn));
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('expirationDate', response.data.expirationDate);
+                dispatch(authSuccess(response.data.token));
+                dispatch(checkAuthTimeout(response.data.expirationDate));
             })
             .catch(err => {
                 dispatch(authFail(err.response.data.error));

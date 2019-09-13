@@ -6,6 +6,7 @@ import PostsList from './components/PostsList/PostsList';
 import Post from './components/Post/Post';
 import { connect } from 'react-redux';
 import * as actions from './store/actions/index';
+import Auth from './containers/Auth/Auth';
 
 class App extends React.Component {
   componentDidMount() {
@@ -16,6 +17,7 @@ class App extends React.Component {
     return (
       <Layout>
         <Switch>
+          <Route path='/login' component={Auth} />
           <Route path='/:title/:id' component={Post} />
           <Route path='/' exact component={PostsList} />
         </Switch>
