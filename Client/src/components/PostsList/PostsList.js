@@ -3,6 +3,7 @@ import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 import ShortPost from './ShortPost/ShortPost';
 import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
+import { connect } from 'react-redux';
 
 class PostsList extends Component {
     state = {
@@ -23,6 +24,20 @@ class PostsList extends Component {
         }
     }
 
+    onDeletePost = (id) => {
+        if (!this.props.isLogged) {
+            return;
+        }
+
+        Axios.delete('/api/blog/' + id)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
     render() {
         let posts = <p>No posts!</p>
 
@@ -40,7 +55,9 @@ class PostsList extends Component {
                     title={post.title}
                     date={fullDate.toDateString()}
                     content={post.content}
-                    image={post.imageUri} />
+                    image={post.imageUri}
+                    isLogged={this.props.isLogged}
+                    onDelete={() => this.onDeletePost(post.id)} />
             });
         }
 
@@ -52,4 +69,10 @@ class PostsList extends Component {
     }
 };
 
-export default PostsList;
+const mapStateToProps = state => {
+    return {
+        isLogged: state.auth.isLogged
+    }
+}
+
+export default connect(mapStateToProps)(PostsList);

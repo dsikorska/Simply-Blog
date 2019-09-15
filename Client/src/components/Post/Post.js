@@ -29,7 +29,7 @@ class Post extends Component {
                 <div className="card" >
                     <h2>{this.state.post.title}</h2>
                     <h5>{this.state.post.date}</h5>
-                    <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" style={{ height: '200px' }} />
+                    {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" style={{ height: '200px' }} /> : null}
                     <p>{this.state.post.content}</p>
                 </div>
                 <Comments id={this.state.post.id} />

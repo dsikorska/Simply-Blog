@@ -1,7 +1,7 @@
 import React from 'react';
 import Axios from '../../../../axios-api';
 
-class newComment extends React.Component {
+class NewComment extends React.Component {
     onFormSubmitHandler = (e) => {
         e.preventDefault();
         const comment = {
@@ -31,4 +31,4 @@ class newComment extends React.Component {
     }
 };
 
-export default newComment;
+export default NewComment;

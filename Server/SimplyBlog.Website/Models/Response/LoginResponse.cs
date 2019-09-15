@@ -2,7 +2,7 @@
 
 namespace SimplyBlog.Website.Models.Response
 {
-    public class LoginResponse : Response<LoginModel>
+    public class LoginResponse : Response
     {
         public string Token { get; set; }
         public DateTime ExpirationDate { get; set; }
