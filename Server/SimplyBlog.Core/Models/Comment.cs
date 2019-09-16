@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplyBlog.Core.Models
 {
-    public class Comment : Entity<int>
+    public class Comment : Entity<Guid>
     {
-        public int PostId { get; set; }
+        public Guid PostId { get; set; }
 
-        [Required]
         public string Author { get; set; }
 
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 

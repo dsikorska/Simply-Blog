@@ -1,34 +1,63 @@
 import React, { Component } from 'react';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
-import Post from './Post/Post';
-import Axios from 'axios';
+import ShortPost from './ShortPost/ShortPost';
+import Axios from '../../axios-api';
+import Spinner from '../UI/Spinner/Spinner';
+import { connect } from 'react-redux';
 
 class PostsList extends Component {
     state = {
-        posts: null
+        posts: null,
+        loading: true
     }
 
     componentDidMount() {
         if (!this.state.posts) {
-            Axios.get('https://simplyblog.azurewebsites.net/api/blog/all')
+            this.setState({ loading: true });
+            Axios.get('/api/blog/posts/0')
                 .then(response => {
-                    this.setState({ posts: response.data });
+                    this.setState({ posts: response.data, loading: false });
+                })
+                .catch(err => {
+                    console.log(err);
                 });
         }
     }
 
-    render() {
-        let posts = <p>Currently no posts added!</p>;
+    onDeletePost = (id) => {
+        if (!this.props.isLogged) {
+            return;
+        }
 
-        if (this.state.posts) {
+        Axios.delete('/api/blog/' + id)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
+    render() {
+        let posts = <p>No posts!</p>
+
+        if (this.state.loading) {
+            posts = <Spinner />
+        }
+
+        if (this.state.posts && this.state.posts.length !== 0) {
             posts = this.state.posts.map(post => {
                 const fullDate = new Date(Date.parse(post.created));
 
-                return <Post
-                    key={new Date().getTime()}
+                return <ShortPost
+                    key={post.id}
+                    id={post.id}
                     title={post.title}
                     date={fullDate.toDateString()}
-                    content={post.content} />
+                    content={post.content}
+                    image={post.imageUri}
+                    isLogged={this.props.isLogged}
+                    onDelete={() => this.onDeletePost(post.id)} />
             });
         }
 
@@ -40,4 +69,10 @@ class PostsList extends Component {
     }
 };
 
-export default PostsList;
+const mapStateToProps = state => {
+    return {
+        isLogged: state.auth.isLogged
+    }
+}
+
+export default connect(mapStateToProps)(PostsList);

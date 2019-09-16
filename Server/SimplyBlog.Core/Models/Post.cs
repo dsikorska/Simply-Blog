@@ -4,10 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplyBlog.Core.Models
 {
-    public class Post : Entity<int>
+    public class Post : Entity<Guid>
     {
         [Required]
         public string Title { get; set; }
+
+        public Guid? ImageGuid { get; set; }
 
         [Required]
         public string Content { get; set; }

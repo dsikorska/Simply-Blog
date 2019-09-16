@@ -1,14 +1,18 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
+using SimplyBlog.Website.Configuration;
+using SimplyBlog.Website.Mapping;
 
 namespace SimplyBlog.Website
 {
@@ -25,12 +29,20 @@ namespace SimplyBlog.Website
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // Ref: https://forums.asp.net/t/2148624.aspx?can+we+update+appsettings+json+in+controller+
+            services.ConfigureWritable<Credentials>(Configuration.GetSection("credentials"));
+            services.ConfigureWritable<Secret>(Configuration.GetSection("secret"));
+
             string path = Environment.CurrentDirectory + @"\Data";
             Directory.CreateDirectory(path);
 
             services.AddTransient(x => new XmlContext(path));
             services.AddTransient<IBlogRepository, BlogRepository>();
-            services.AddTransient(x => new AppService(Configuration));
+            services.AddTransient(typeof(AppService));
+
+            MapperConfiguration mappingConfig = new MapperConfiguration(config => config.AddProfile(new DtosMappingProfile()));
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddCors();
 
@@ -39,7 +51,7 @@ namespace SimplyBlog.Website
 
             // Ref: https://jasonwatmore.com/post/2018/08/14/aspnet-core-21-jwt-authentication-tutorial-with-example-api
             // Ref: https://www.blinkingcaret.com/2017/09/06/secure-web-api-in-asp-net-core/
-            byte[] key = Encoding.ASCII.GetBytes(Configuration.GetValue<string>("secret"));
+            byte[] key = Encoding.ASCII.GetBytes(Configuration.GetSection("secret")["value"].ToString());
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,6 +76,12 @@ namespace SimplyBlog.Website
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(ImageHandler.BasePath),
+                RequestPath = ImageHandler.PublicPath
+            });
+
             app.UseCors(policy =>
             {
                 policy.AllowAnyHeader();

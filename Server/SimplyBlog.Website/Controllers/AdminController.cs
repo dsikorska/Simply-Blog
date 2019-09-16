@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimplyBlog.Website.Models;
+using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Website.Controllers
 {
@@ -19,21 +20,38 @@ namespace SimplyBlog.Website.Controllers
         [HttpPost("auth")]
         public ActionResult Authenticate(LoginModel model)
         {
-            string token = service.Authenticate(model.Username, model.Password);
+            LoginResponse response = service.Authenticate(model.Username, model.Password);
 
-            if (token == null)
+            if (response.Error != null)
             {
-                return BadRequest(model);
+                return BadRequest(response);
             }
 
-            return Ok(token);
+            return Ok(response);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("hash")]
-        public ActionResult GetHash(string input)
+        [HttpPost("changePassword")]
+        public ActionResult ChangePassword([FromQuery]string value)
         {
-            return Ok(AppService.HashPassword(input));
+            service.ChangePassword(value);
+            return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("changeLogin")]
+        public ActionResult ChangeLogin([FromQuery]string value)
+        {
+            service.ChangeLogin(value);
+            return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("changeSecret")]
+        public ActionResult ChangeSecret([FromQuery]string value)
+        {
+            service.ChangeSecret(value);
+            return Ok();
         }
     }
 }
