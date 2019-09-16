@@ -27,15 +27,15 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [HttpGet("posts/{page:int}")]
-        public ActionResult<IEnumerable<Post>> GetPosts(int page)
+        public ActionResult<IEnumerable<Post>> GetPosts(int page = 0)
         {
             IEnumerable<Post> posts = blogRepository.GetPosts(page);
             IEnumerable<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x);
             return Ok(mappedPosts);
         }
 
-        [HttpGet("{id}/{shortPost:bool?}")]
-        public ActionResult<Post> GetPost(Guid id, bool shortPost = false)
+        [HttpGet("{id}")]
+        public ActionResult<Post> GetPost(Guid id, [FromQuery]bool shortPost = false)
         {
             Post post = blogRepository.GetById(id);
 

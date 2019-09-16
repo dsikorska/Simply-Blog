@@ -3,7 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Website.Configuration;
 using SimplyBlog.Website.Models.Response;
@@ -12,13 +11,11 @@ namespace SimplyBlog.Website
 {
     public class AppService
     {
-        private readonly IConfiguration configuration;
         private readonly IWritableOptions<Credentials> writableCredentials;
         private readonly IWritableOptions<Secret> writableSecret;
 
-        public AppService(IConfiguration configuration, IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret)
+        public AppService(IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret)
         {
-            this.configuration = configuration;
             this.writableCredentials = writableCredentials;
             this.writableSecret = writableSecret;
         }
@@ -33,7 +30,7 @@ namespace SimplyBlog.Website
                 };
             }
 
-            byte[] key = Encoding.ASCII.GetBytes(configuration.GetValue<string>("secret"));
+            byte[] key = Encoding.ASCII.GetBytes(writableSecret.Value.Value);
             LoginResponse response = GetSecurityToken(key, username);
 
             return response;
