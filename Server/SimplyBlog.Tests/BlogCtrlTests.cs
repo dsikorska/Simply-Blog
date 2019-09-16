@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Controllers;
+using SimplyBlog.Website.Mapping;
 
 namespace SimplyBlog.Tests
 {
@@ -17,7 +19,9 @@ namespace SimplyBlog.Tests
         public void Setup()
         {
             FakeBlogRepository blogRepository = new FakeBlogRepository();
-            blogController = new BlogController(blogRepository);
+            MapperConfiguration mappingConfig = new MapperConfiguration(config => config.AddProfile(new DtosMappingProfile()));
+            IMapper mapper = mappingConfig.CreateMapper();
+            blogController = new BlogController(blogRepository, mapper);
         }
 
         [Test]
@@ -52,7 +56,7 @@ namespace SimplyBlog.Tests
         {
             blogController.ModelState.AddModelError("", "");
 
-            ActionResult result = await blogController.CreatePost(new Post());
+            ActionResult result = await blogController.CreatePost(new Website.Models.DTOs.NewPostDto());
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.IsNotNull((result as BadRequestObjectResult).Value);
@@ -61,25 +65,25 @@ namespace SimplyBlog.Tests
         [Test]
         public async Task CreatePost_ValidModel_ReturnsOk()
         {
-            ActionResult result = await blogController.CreatePost(new Post());
+            ActionResult result = await blogController.CreatePost(new Website.Models.DTOs.NewPostDto());
 
             Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]
-        public void EditPost_ValidModel_ReturnsOk()
+        public async Task EditPost_ValidModel_ReturnsOk()
         {
-            ActionResult result = blogController.EditPost(new Post());
+            ActionResult result = await blogController.EditPost(new Website.Models.DTOs.EditPostDto());
 
             Assert.IsInstanceOf<OkResult>(result);
         }
 
         [Test]
-        public void EditPost_NotValidModel_ReturnsBadRequest()
+        public async Task EditPost_NotValidModel_ReturnsBadRequest()
         {
             blogController.ModelState.AddModelError("", "");
 
-            ActionResult result = blogController.EditPost(new Post());
+            ActionResult result = await blogController.EditPost(new Website.Models.DTOs.EditPostDto());
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.IsNotNull((result as BadRequestObjectResult).Value);

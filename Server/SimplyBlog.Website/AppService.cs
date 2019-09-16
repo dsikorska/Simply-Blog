@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using SimplyBlog.Website.Configuration;
 using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Website
@@ -12,10 +13,14 @@ namespace SimplyBlog.Website
     public class AppService
     {
         private readonly IConfiguration configuration;
+        private readonly IWritableOptions<Credentials> writableCredentials;
+        private readonly IWritableOptions<Secret> writableSecret;
 
-        public AppService(IConfiguration configuration)
+        public AppService(IConfiguration configuration, IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret)
         {
             this.configuration = configuration;
+            this.writableCredentials = writableCredentials;
+            this.writableSecret = writableSecret;
         }
 
         public LoginResponse Authenticate(string username, string password)
@@ -61,13 +66,12 @@ namespace SimplyBlog.Website
 
         public bool ValidateUser(string username, string password)
         {
-            IConfigurationSection credentials = configuration.GetSection("credentials");
-            string name = credentials["username"];
-            string hash = credentials["hash"];
+            string login = writableCredentials.Value.Login;
+            string hashPassword = writableCredentials.Value.Password;
 
-            bool validPassword = VerifyPassword(hash, password);
+            bool validPassword = VerifyPassword(hashPassword, password);
 
-            return username == name && validPassword;
+            return username == login && validPassword;
         }
 
         private static bool VerifyPassword(string hash, string password)
@@ -94,7 +98,11 @@ namespace SimplyBlog.Website
         public void ChangePassword(string newPassword)
         {
             string newHashedPassword = HashPassword(newPassword);
-            //TODO
+
+            writableCredentials.Update(opt =>
+            {
+                opt.Password = newHashedPassword;
+            });
         }
 
         //Ref: https://medium.com/@mehanix/lets-talk-security-salted-password-hashing-in-c-5460be5c3aae
@@ -109,6 +117,27 @@ namespace SimplyBlog.Website
             Array.Copy(hashed, 0, hashBytes, 16, 20);
 
             return Convert.ToBase64String(hashBytes);
+        }
+
+        public void ChangeLogin(string newLogin)
+        {
+            writableCredentials.Update(opt =>
+            {
+                opt.Login = newLogin;
+            });
+        }
+
+        public void ChangeSecret(string newSecret)
+        {
+            if (newSecret.Length < 64)
+            {
+                throw new ArgumentException("New secret must be at least 64 characters length.");
+            }
+
+            writableSecret.Update(opt =>
+            {
+                opt.Value = newSecret;
+            });
         }
     }
 }

@@ -32,9 +32,25 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("changePassword")]
-        public ActionResult ChangePassword(ChangePasswordModel model)
+        public ActionResult ChangePassword(ValueModel<string> model)
         {
-            service.ChangePassword(model.NewPassword);
+            service.ChangePassword(model.Value);
+            return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("changeLogin")]
+        public ActionResult ChangeLogin(ValueModel<string> model)
+        {
+            service.ChangeLogin(model.Value);
+            return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("changeSecret")]
+        public ActionResult ChangeSecret(ValueModel<string> model)
+        {
+            service.ChangeSecret(model.Value);
             return Ok();
         }
     }
