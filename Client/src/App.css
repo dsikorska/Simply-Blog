@@ -1,24 +1,14 @@
 * {
   box-sizing: border-box;
+  word-break: break-all;
 }
 
 body {
   font-family: Arial;
   padding: 20px;
   background: #f1f1f1;
-}
-
-/* Left column */
-.leftcolumn {
-  float: left;
-  width: 75%;
-}
-
-/* Right column */
-.rightcolumn {
-  float: left;
-  width: 25%;
-  padding-left: 20px;
+  width: 50%;
+  margin: auto;
 }
 
 /* Fake image */
@@ -33,18 +23,4 @@ body {
   background-color: white;
   padding: 20px;
   margin-top: 20px;
-}
-
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-@media screen and (max-width: 800px) {
-  .leftcolumn, .rightcolumn {
-    width: 100%;
-    padding: 0;
-  }
 }

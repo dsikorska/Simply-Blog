@@ -26,7 +26,7 @@ namespace SimplyBlog.Website.Controllers
             mapper = map;
         }
 
-        [HttpGet("posts/{page:int}")]
+        [HttpGet("posts/{page:int?}")]
         public ActionResult<IEnumerable<Post>> GetPosts(int page = 0)
         {
             IEnumerable<Post> posts = blogRepository.GetPosts(page);
@@ -77,7 +77,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPatch("{id}")]
-        public async Task<ActionResult> EditPost(EditPostDto post)
+        public async Task<ActionResult> EditPost([FromForm]EditPostDto post)
         {
             if (!ModelState.IsValid)
             {

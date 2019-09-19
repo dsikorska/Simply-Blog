@@ -26,12 +26,8 @@ class EditPost extends React.Component {
 
     onFormSubmitHandler = (e) => {
         e.preventDefault();
-        const post = {
-            id: this.state.post.id,
-            title: this.refs.title.value,
-            image: this.refs.image.value,
-            content: this.refs.content.value,
-        }
+        let post = new FormData(e.target);
+
         Axios.patch('/api/blog/' + this.state.post.id, post)
             .then(response => {
                 console.log(response);
@@ -44,6 +40,7 @@ class EditPost extends React.Component {
     render() {
         return (
             <form onSubmit={this.onFormSubmitHandler}>
+                <input hidden name="id" ref="id" defaultValue={this.state.post.id}></input>
                 <input placeholder="Title" name="title" ref="title" required defaultValue={this.state.post.title} />
                 {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt={this.state.post.title} /> : null}
                 <input type="file" name="image" ref="image" accept="image/*" />

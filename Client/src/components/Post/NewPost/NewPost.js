@@ -5,11 +5,8 @@ class NewPost extends React.Component {
 
     onFormSubmitHandler = (e) => {
         e.preventDefault();
-        const post = {
-            title: this.refs.title.value,
-            image: this.refs.image.value,
-            content: this.refs.content.value,
-        }
+        let post = new FormData(e.target);
+
         Axios.post('/api/blog/new', post)
             .then(response => {
                 console.log(response);
