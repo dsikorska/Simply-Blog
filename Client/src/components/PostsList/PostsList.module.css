@@ -1,0 +1,27 @@
+.Search {
+  width: 80%;
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.Search div {
+  width: 30%;
+  padding-right: 0;
+}
+
+.Search button {
+  margin-left: 0;
+}
+
+.Categories {
+  width: 20%;
+  padding: 0 10px;
+}
+
+.Bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}

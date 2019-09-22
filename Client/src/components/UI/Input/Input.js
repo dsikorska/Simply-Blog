@@ -16,7 +16,8 @@ const input = (props) => {
                     className={inputClasses.join(' ')}
                     {...props.elementConfig}
                     value={props.value}
-                    onChange={props.changed} />
+                    onChange={props.changed}
+                    placeholder={props.placeholder} />
             break;
         case 'textarea':
             inputElement =
@@ -24,7 +25,8 @@ const input = (props) => {
                     className={inputClasses.join(' ')}
                     {...props.elementConfig}
                     value={props.value}
-                    onChange={props.changed} />
+                    onChange={props.changed}
+                    placeholder={props.placeholder} />
             break;
         case 'select':
             inputElement =
@@ -43,13 +45,14 @@ const input = (props) => {
                     className={inputClasses.join(' ')}
                     {...props.elementConfig}
                     value={props.value}
-                    onChange={props.changed} />
+                    onChange={props.changed}
+                    placeholder={props.placeholder} />
             break;
     }
 
     return (
         <div className={styles.Input}>
-            <label className={styles.Label}>{props.label}</label>
+            {props.label ? <label className={styles.Label}>{props.label}</label> : null}
             {inputElement}
         </div>
     );

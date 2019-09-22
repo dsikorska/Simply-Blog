@@ -1,10 +1,11 @@
 import React from 'react';
+import styles from './ShortPost.module.css';
 import { Link } from 'react-router-dom'
 import Axios from '../../../axios-api';
 
 const shortPost = (props) => {
     return (
-        <div className="card">
+        <div className={styles.Panel}>
             {props.isLogged ? (
                 <div>
                     <button onClick={props.onDelete}>Delete</button>
@@ -15,10 +16,20 @@ const shortPost = (props) => {
             )
                 : null}
             <Link to={{ pathname: props.title + '/' + props.id }}>
-                <h2>{props.title}</h2>
-                <h5>{props.date}</h5>
-                {props.image ? <img src={Axios.defaults.baseURL + props.image} style={{ height: '200px' }} alt="" /> : null}
-                <p>{props.content.substring(0, 200)}...</p>
+                <div className={styles.PanelHeader}>
+                    <h3>{props.title}</h3>
+                </div>
+                <div className={styles.PanelBody}>
+                    {props.image ?
+                        <div className={styles.PanelImg}>
+                            <img src={Axios.defaults.baseURL + props.image} alt="" />
+                        </div>
+                        : null}
+                    <p>{props.content.substring(0, 200)}...</p>
+                </div>
+                <div className={styles.PanelFooter}>
+                    <small>{props.date}</small>
+                </div>
             </Link>
         </div>
     );

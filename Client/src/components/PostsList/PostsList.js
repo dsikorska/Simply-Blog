@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import styles from './PostsList.module.css';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 import ShortPost from './ShortPost/ShortPost';
 import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
 import { connect } from 'react-redux';
+import Input from '../UI/Input/Input';
+import Button from './../UI/Button/Button';
 
 class PostsList extends Component {
     state = {
@@ -63,6 +66,15 @@ class PostsList extends Component {
 
         return (
             <Auxiliary>
+                <div className={styles.Bar}>
+                    <div className={styles.Categories}>
+                        <Button btnType="Secondary">Categories</Button>
+                    </div>
+                    <div className={styles.Search}>
+                        <Input elementType="input" placeholder="Search..." />
+                        <Button btnType="Secondary">Find</Button>
+                    </div>
+                </div>
                 {posts}
             </Auxiliary>
         );

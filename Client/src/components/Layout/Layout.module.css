@@ -1,0 +1,37 @@
+.Nav {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem;
+  width: 100%;
+}
+
+.NavContent {
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+}
+
+.Nav a {
+  margin: 0 15px;
+  padding: 0 10px;
+  text-decoration: none;
+  color: black;
+}
+
+.ActiveNavLink {
+  color: grey !important;
+}
+
+.Header {
+  padding: 30px;
+  font-size: 40px;
+  text-align: center;
+  background: white;  
+}
+
+.Footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+  margin-top: 20px;
+}

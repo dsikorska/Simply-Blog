@@ -17,10 +17,3 @@ body {
   width: 100%;
   padding: 20px;
 }
-
-/* Add a card effect for articles */
-.card {
-  background-color: white;
-  padding: 20px;
-  margin-top: 20px;
-}
