@@ -1,5 +1,6 @@
 import React from 'react';
 import Axios from '../../../axios-api';
+import Input from './../../UI/Input/Input';
 
 class NewPost extends React.Component {
 

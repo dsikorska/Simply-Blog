@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import styles from './Post.module.css';
 import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 import Comments from './Comments/Comments';
+import Panel from './../UI/Panel/Panel';
 
 class Post extends Component {
     state = {
@@ -26,12 +28,21 @@ class Post extends Component {
     render() {
         const post = this.state.post ? (
             <div>
-                <div className="card" >
+                <Panel.header>
                     <h2>{this.state.post.title}</h2>
-                    <h5>{this.state.post.date}</h5>
-                    {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" style={{ height: '200px' }} /> : null}
-                    <p>{this.state.post.content}</p>
-                </div>
+                    <h5>Created: {new Date(this.state.post.created).toDateString()}</h5>
+                </Panel.header>
+                <Panel.body>
+                    <div className={styles.Container}>
+                        {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" className={styles} /> : null}
+                        <p className={styles.Content}>
+                            {this.state.post.content}
+                        </p>
+                    </div>
+                </Panel.body>
+                <Panel.footer>
+                    <h5>Last modified: {new Date(this.state.post.lastModified).toDateString()}</h5>
+                </Panel.footer>
                 <Comments id={this.state.post.id} />
             </div>) : <Spinner />
 

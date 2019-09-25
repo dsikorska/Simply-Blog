@@ -1,37 +1,38 @@
 import React from 'react';
-import styles from './ShortPost.module.css';
 import { Link } from 'react-router-dom'
 import Axios from '../../../axios-api';
+import Panel from './../../UI/Panel/Panel';
+import Button from './../../UI/Button/Button';
 
 const shortPost = (props) => {
     return (
-        <div className={styles.Panel}>
-            {props.isLogged ? (
-                <div>
-                    <button onClick={props.onDelete}>Delete</button>
-                    <Link to={{ pathname: '/edit/' + props.title + '/' + props.id }}>
-                        <button>Edit</button>
-                    </Link>
-                </div>
-            )
-                : null}
+        <Panel>
             <Link to={{ pathname: props.title + '/' + props.id }}>
-                <div className={styles.PanelHeader}>
+                <Panel.header>
                     <h3>{props.title}</h3>
-                </div>
-                <div className={styles.PanelBody}>
-                    {props.image ?
-                        <div className={styles.PanelImg}>
-                            <img src={Axios.defaults.baseURL + props.image} alt="" />
+                    {props.isLogged ? (
+                        <div>
+                            <Link to={{ pathname: '/edit/' + props.title + '/' + props.id }}>
+                                <Button btnType="Secondary">Edit</Button>
+                            </Link>
+                            <Button btnType="Danger" onClick={props.onDelete}>Delete</Button>
                         </div>
+                    )
+                        : null}
+                </Panel.header>
+                <Panel.body>
+                    {props.image ?
+                        <Panel.body.img>
+                            <img src={Axios.defaults.baseURL + props.image} alt="" />
+                        </Panel.body.img>
                         : null}
                     <p>{props.content.substring(0, 200)}...</p>
-                </div>
-                <div className={styles.PanelFooter}>
+                </Panel.body>
+                <Panel.footer>
                     <small>{props.date}</small>
-                </div>
+                </Panel.footer>
             </Link>
-        </div>
+        </Panel>
     );
 };
 
