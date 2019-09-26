@@ -1,6 +1,8 @@
 import React from 'react';
+import styles from './NewPost.module.css';
 import Axios from '../../../axios-api';
-import Input from './../../UI/Input/Input';
+import Button from './../../UI/Button/Button';
+import Panel from './../../UI/Panel/Panel';
 
 class NewPost extends React.Component {
 
@@ -19,12 +21,25 @@ class NewPost extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.onFormSubmitHandler}>
-                <input placeholder="Title" name="title" ref="title" required />
-                <input type="file" name="image" ref="image" accept="image/*" />
-                <textarea placeholder="Content" name="content" ref="content" required></textarea>
-                <button type="submit">Save</button>
-            </form>
+            <Panel.body>
+                <form onSubmit={this.onFormSubmitHandler}>
+                    <input className={styles.Input} placeholder="Title" name="title" ref="title" required />
+                    <div className={styles.Img}>
+                        {true ?
+                            <div className={styles.Block}>
+
+                            </div>
+                            : null}
+                        <div className={styles.Block}>
+                            <input type="file" name="image" ref="image" accept="image/*" />
+                        </div>
+                    </div>
+                    <textarea className={styles.Textarea} placeholder="Content" name="content" ref="content" required></textarea>
+                    <div className={styles.Button}>
+                        <Button btnType="Success">Save</Button>
+                    </div>
+                </form>
+            </Panel.body>
         )
     }
 }

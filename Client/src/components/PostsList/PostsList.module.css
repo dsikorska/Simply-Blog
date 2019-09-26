@@ -1,5 +1,5 @@
 .Search {
-  width: 80%;
+  width: 70%;
   display:flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -15,7 +15,7 @@
 }
 
 .Categories {
-  width: 20%;
+  width: 30%;
   padding: 0 10px;
 }
 

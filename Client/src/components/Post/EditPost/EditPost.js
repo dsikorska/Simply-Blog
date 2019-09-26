@@ -1,5 +1,7 @@
 import React from 'react';
 import Axios from '../../../axios-api';
+import styles from './EditPost.module.css';
+import Button from './../../UI/Button/Button';
 
 class EditPost extends React.Component {
     state = {
@@ -41,11 +43,21 @@ class EditPost extends React.Component {
         return (
             <form onSubmit={this.onFormSubmitHandler}>
                 <input hidden name="id" ref="id" defaultValue={this.state.post.id}></input>
-                <input placeholder="Title" name="title" ref="title" required defaultValue={this.state.post.title} />
-                {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt={this.state.post.title} /> : null}
-                <input type="file" name="image" ref="image" accept="image/*" />
-                <textarea placeholder="Content" name="content" ref="content" required defaultValue={this.state.post.content}></textarea>
-                <button type="submit">Save</button>
+                <input className={styles.Input} placeholder="Title" name="title" ref="title" required defaultValue={this.state.post.title} />
+                <div className={styles.Img}>
+                    {this.state.post.imageUri ?
+                        <div className={styles.Block}>
+                            <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt={this.state.post.title} />
+                        </div>
+                        : null}
+                    <div className={styles.Block}>
+                        <input type="file" name="image" ref="image" accept="image/*" />
+                    </div>
+                </div>
+                <textarea className={styles.Textarea} placeholder="Content" name="content" ref="content" required defaultValue={this.state.post.content}></textarea>
+                <div className={styles.Button}>
+                    <Button btnType="Success">Save</Button>
+                </div>
             </form>
         )
     }

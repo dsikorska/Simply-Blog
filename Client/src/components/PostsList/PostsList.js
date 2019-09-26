@@ -7,6 +7,7 @@ import Spinner from '../UI/Spinner/Spinner';
 import { connect } from 'react-redux';
 import Input from '../UI/Input/Input';
 import Button from './../UI/Button/Button';
+import { Link } from 'react-router-dom';
 
 class PostsList extends Component {
     state = {
@@ -68,6 +69,11 @@ class PostsList extends Component {
             <Auxiliary>
                 <div className={styles.Bar}>
                     <div className={styles.Categories}>
+                        {this.props.isLogged ?
+                            <Link to="/new">
+                                <Button btnType="Success">New post</Button>
+                            </Link>
+                            : null}
                         <Button btnType="Secondary">Categories</Button>
                     </div>
                     <div className={styles.Search}>
