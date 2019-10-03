@@ -33,9 +33,9 @@ class Post extends Component {
                     <h5>Created: {new Date(this.state.post.created).toDateString()}</h5>
                 </Panel.header>
                 <Panel.body>
-                    <div className={styles.Container}>
-                        {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" className={styles} /> : null}
-                        <p className={styles.Content}>
+                    <div className="Container">
+                        {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" /> : null}
+                        <p className="Content">
                             {this.state.post.content}
                         </p>
                     </div>

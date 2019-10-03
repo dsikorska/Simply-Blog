@@ -49,13 +49,15 @@ class Comments extends React.Component {
             comments = this.state.comments.map(comment => {
                 const fullDate = new Date(Date.parse(comment.created));
 
-                return <Comment
-                    key={comment.created}
-                    author={comment.author}
-                    date={fullDate.toDateString()}
-                    content={comment.content}
-                    onDelete={() => this.onDeleteCommentHandler(comment.id)}
-                    isLogged={this.props.isLogged} />
+                return (
+                    <Comment
+                        key={comment.created}
+                        author={comment.author}
+                        date={fullDate.toDateString()}
+                        content={comment.content}
+                        onDelete={() => this.onDeleteCommentHandler(comment.id)}
+                        isLogged={this.props.isLogged} />
+                )
             });
         }
 

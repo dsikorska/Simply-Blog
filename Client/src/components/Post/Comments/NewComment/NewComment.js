@@ -1,5 +1,7 @@
 import React from 'react';
 import Axios from '../../../../axios-api';
+import Button from './../../../UI/Button/Button';
+import Panel from '../../../UI/Panel/Panel';
 
 class NewComment extends React.Component {
     onFormSubmitHandler = (e) => {
@@ -21,12 +23,18 @@ class NewComment extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.onFormSubmitHandler}>
-                <input placeholder="Your name" name="name" ref="name" />
-                <input type="email" placeholder="Email (required)" name="email" ref="email" required />
-                <textarea placeholder="Your text goes here." name="content" ref="content" required></textarea>
-                <button type="submit">Save</button>
-            </form>
+            <div className="M30">
+                <Panel.body>
+                    <form onSubmit={this.onFormSubmitHandler}>
+                        <input placeholder="Your name" name="name" ref="name" className="Input" required />
+                        <input type="email" placeholder="Email (required)" name="email" ref="email" required className="Input" />
+                        <textarea placeholder="Your text goes here." name="content" ref="content" required className="Textarea Textarea-small"></textarea>
+                        <div className="Button">
+                            <Button btnType="Success">Save</Button>
+                        </div>
+                    </form>
+                </Panel.body>
+            </div>
         )
     }
 };
