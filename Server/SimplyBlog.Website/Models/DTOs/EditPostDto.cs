@@ -8,7 +8,7 @@ namespace SimplyBlog.Website.Models.DTOs
 {
     public class EditPostDto
     {
-        public Guid Id { get; set; }
+        public long Id { get; set; }
 
         [Required]
         public string Title { get; set; }

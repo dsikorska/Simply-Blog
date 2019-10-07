@@ -10,8 +10,8 @@ class NewPost extends React.Component {
         let post = new FormData(e.target);
 
         Axios.post('/api/blog/new', post)
-            .then(response => {
-                console.log(response);
+            .then(() => {
+                this.props.history.push('/');
             })
             .catch(err => {
                 console.log(err);

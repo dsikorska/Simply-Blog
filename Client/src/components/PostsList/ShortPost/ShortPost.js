@@ -7,19 +7,22 @@ import Button from './../../UI/Button/Button';
 const shortPost = (props) => {
     return (
         <Panel>
-            <Link to={{ pathname: props.title + '/' + props.id }}>
-                <Panel.header>
-                    <h3>{props.title}</h3>
-                    {props.isLogged ? (
-                        <div>
-                            <Link to={{ pathname: '/edit/' + props.title + '/' + props.id }}>
-                                <Button btnType="Secondary">Edit</Button>
-                            </Link>
-                            <Button btnType="Danger" onClick={props.onDelete}>Delete</Button>
-                        </div>
-                    )
-                        : null}
-                </Panel.header>
+            <Panel.header>
+                <div style={{ textAlign: "left" }}>
+                    <h3 style={{ margin: "10px 0" }}>{props.title}</h3>
+                    <small style={{ margin: "5px 0" }}>{props.date}</small>
+                </div>
+                {props.isLogged ? (
+                    <div>
+                        <Link to={{ pathname: '/edit/' + props.id + '/' + props.title.toLowerCase().replace(' ', '-') }}>
+                            <Button btnType="Secondary">Edit</Button>
+                        </Link>
+                        <Button btnType="Danger" clicked={props.onDelete}>Delete</Button>
+                    </div>
+                )
+                    : null}
+            </Panel.header>
+            <Link to={{ pathname: props.id + '/' + props.title.toLowerCase().replace(' ', '-') }}>
                 <Panel.body>
                     {props.image ?
                         <Panel.body.img>
@@ -29,7 +32,7 @@ const shortPost = (props) => {
                     <p>{props.content.substring(0, 200)}...</p>
                 </Panel.body>
                 <Panel.footer>
-                    <small>{props.date}</small>
+
                 </Panel.footer>
             </Link>
         </Panel>

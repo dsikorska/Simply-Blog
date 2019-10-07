@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SimplyBlog.Core.Models
 {
-    public class Post : Entity<Guid>
+    public class Post : Entity<long>
     {
         [Required]
         public string Title { get; set; }

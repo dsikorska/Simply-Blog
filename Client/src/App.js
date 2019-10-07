@@ -23,8 +23,8 @@ class App extends React.Component {
           <Route path='/about' component={About} />
           <Route path='/new' component={NewPost} />
           <Route path='/login' component={Auth} />
-          <Route path='/edit/:title/:id' component={EditPost} />
-          <Route path='/:title/:id' component={Post} />
+          <Route path='/edit/:id' component={EditPost} />
+          <Route path='/:id' component={Post} />
           <Route path='/' exact component={PostsList} />
         </Switch>
       </Layout>

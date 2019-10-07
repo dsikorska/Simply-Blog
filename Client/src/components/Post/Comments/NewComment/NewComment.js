@@ -12,9 +12,13 @@ class NewComment extends React.Component {
             content: this.refs.content.value,
             postId: this.props.id
         }
+
         Axios.post('/api/blog/' + this.props.id + '/new', comment)
             .then(response => {
-                //do nothing
+                this.refs.email.value = '';
+                this.refs.name.value = '';
+                this.refs.content.value = ''
+                this.props.submit();
             })
             .catch(err => {
                 console.log(err);

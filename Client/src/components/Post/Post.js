@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import styles from './Post.module.css';
+import './Post.module.css';
 import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
-import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 import Comments from './Comments/Comments';
 import Panel from './../UI/Panel/Panel';
 
@@ -29,8 +28,10 @@ class Post extends Component {
         const post = this.state.post ? (
             <div>
                 <Panel.header>
-                    <h2>{this.state.post.title}</h2>
-                    <h5>Created: {new Date(this.state.post.created).toDateString()}</h5>
+                    <h2 style={{ width: "100%", textAlign: "left", margin: "0" }}>{this.state.post.title}</h2>
+                    <div>
+                        <p>tags</p>
+                    </div>
                 </Panel.header>
                 <Panel.body>
                     <div className="Container">
@@ -41,15 +42,16 @@ class Post extends Component {
                     </div>
                 </Panel.body>
                 <Panel.footer>
-                    <h5>Last modified: {new Date(this.state.post.lastModified).toDateString()}</h5>
+                    <h5 style={{ margin: "5px 0" }}>Created: {new Date(this.state.post.created).toDateString()}</h5>
+                    <h5 style={{ margin: "5px 0" }}>Last modified: {new Date(this.state.post.lastModified).toDateString()}</h5>
                 </Panel.footer>
                 <Comments id={this.state.post.id} />
             </div>) : <Spinner />
 
         return (
-            <Auxiliary>
+            <div className="Container">
                 {post}
-            </Auxiliary>
+            </div>
         );
     }
 };

@@ -15,18 +15,36 @@ namespace SimplyBlog.Core.Concrete
 
         public override void Create(Post entity)
         {
-            entity.Id = Guid.NewGuid();
+            if (Entities.Count() == 0)
+            {
+                entity.Id = 0;
+            }
+            else
+            {
+                entity.Id = Entities.Max(x => x.Id) + 1;
+            }
             base.Create(entity);
         }
 
         public IEnumerable<Post> GetPosts(int page)
         {
-            return Entities.Skip(5 * page).Take(5);
+            return Entities
+                .OrderByDescending(x => x.LastModified)
+                .Skip(5 * page)
+                .Take(5);
         }
 
-        public IEnumerable<Comment> GetAllComments(Guid id)
+        public Post GetById(long id)
         {
-            return Entities.SelectMany(x => x.Comments).Where(x => x.PostId == id);
+            return Entities.FirstOrDefault(x => x.Id == id);
+        }
+
+        public IEnumerable<Comment> GetAllComments(long id)
+        {
+            return Entities
+                .SelectMany(x => x.Comments)
+                .Where(x => x.PostId == id)
+                .OrderByDescending(x => x.Created);
         }
 
         public void AddComment(Post post, Comment comment)

@@ -2,6 +2,7 @@ import React from 'react';
 import Axios from '../../../axios-api';
 import Button from './../../UI/Button/Button';
 import Panel from '../../UI/Panel/Panel';
+import Spinner from '../../UI/Spinner/Spinner';
 
 class EditPost extends React.Component {
     state = {
@@ -32,7 +33,7 @@ class EditPost extends React.Component {
 
         Axios.patch('/api/blog/' + this.state.post.id, post)
             .then(response => {
-                console.log(response);
+                this.props.history.push('/');
             })
             .catch(err => {
                 console.log(err);
@@ -41,26 +42,31 @@ class EditPost extends React.Component {
 
     render() {
         return (
-            <Panel.body>
-                <form onSubmit={this.onFormSubmitHandler}>
-                    <input hidden name="id" ref="id" defaultValue={this.state.post.id}></input>
-                    <input className="Input" placeholder="Title" name="title" ref="title" required defaultValue={this.state.post.title} />
-                    <div className="Img">
-                        {this.state.post.imageUri ?
+            (!this.state.loading ?
+                (<Panel.body>
+                    <form onSubmit={this.onFormSubmitHandler}>
+                        <input hidden name="id" ref="id" defaultValue={this.state.post.id}></input>
+                        <input className="Input" placeholder="Title" name="title" ref="title" required defaultValue={this.state.post.title} />
+                        <div className="Img">
+                            {this.state.post.imageUri ?
+                                <div className="Block">
+                                    <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt={this.state.post.title} />
+                                </div>
+                                : null}
                             <div className="Block">
-                                <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt={this.state.post.title} />
+                                <input type="file" name="image" ref="image" accept="image/*" />
                             </div>
-                            : null}
-                        <div className="Block">
-                            <input type="file" name="image" ref="image" accept="image/*" />
                         </div>
-                    </div>
-                    <textarea className="Textarea" placeholder="Content" name="content" ref="content" required defaultValue={this.state.post.content}></textarea>
-                    <div className="Button">
-                        <Button btnType="Success">Save</Button>
-                    </div>
-                </form>
-            </Panel.body>
+                        <textarea className="Textarea" placeholder="Content" name="content" ref="content" required value={this.state.post.content}></textarea>
+                        <div className="Button">
+                            <Button btnType="Success">Save</Button>
+                        </div>
+                    </form>
+                </Panel.body>)
+                :
+                <div className="Container">
+                    <Spinner />
+                </div>)
         )
     }
 }

@@ -36,6 +36,7 @@
     flex-wrap: wrap;
     padding: 1.25rem;
     background-color: #fff;
+    text-align: left;
 }
 
 .PanelBody p {

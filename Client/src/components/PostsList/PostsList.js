@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import Input from '../UI/Input/Input';
 import Button from './../UI/Button/Button';
 import { Link } from 'react-router-dom';
+import Panel from '../UI/Panel/Panel';
 
 class PostsList extends Component {
     state = {
@@ -33,9 +34,14 @@ class PostsList extends Component {
             return;
         }
 
+        if (!window.confirm("Are you sure?")) {
+            return;
+        }
+
         Axios.delete('/api/blog/' + id)
             .then(response => {
-                console.log(response);
+                const posts = this.state.posts.filter(e => e.id !== id);
+                this.setState({ posts: posts });
             })
             .catch(err => {
                 console.log(err);
@@ -43,7 +49,7 @@ class PostsList extends Component {
     }
 
     render() {
-        let posts = <p>No posts!</p>
+        let posts = <Panel.body><p>No posts!</p></Panel.body>
 
         if (this.state.loading) {
             posts = <Spinner />
@@ -81,7 +87,9 @@ class PostsList extends Component {
                         <Button btnType="Secondary">Find</Button>
                     </div>
                 </div>
-                {posts}
+                <div className="Container">
+                    {posts}
+                </div>
             </Auxiliary>
         );
     }

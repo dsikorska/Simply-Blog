@@ -35,7 +35,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Post> GetPost(Guid id, [FromQuery]bool shortPost = false)
+        public ActionResult<Post> GetPost(long id, [FromQuery]bool shortPost = false)
         {
             Post post = blogRepository.GetById(id);
 
@@ -55,7 +55,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [HttpGet("comments/{id}")]
-        public ActionResult<IEnumerable<Comment>> GetAllPostComments(Guid id)
+        public ActionResult<IEnumerable<Comment>> GetAllPostComments(long id)
         {
             return Ok(blogRepository.GetAllComments(id));
         }
@@ -104,7 +104,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public ActionResult DeletePost(Guid id)
+        public ActionResult DeletePost(long id)
         {
             Post post = blogRepository.GetById(id);
 
@@ -118,7 +118,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [HttpPost("{id}/new")]
-        public ActionResult CreateComment(Guid id, Comment comment)
+        public ActionResult CreateComment(long id, Comment comment)
         {
             if (!ModelState.IsValid)
             {
@@ -138,7 +138,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{postId}/{id}")]
-        public ActionResult DeleteComment(Guid postId, Guid id)
+        public ActionResult DeleteComment(long postId, Guid id)
         {
             Post post = blogRepository.GetById(postId);
             Comment comment = post.Comments.Select(x => x).FirstOrDefault(x => x.Id == id);
