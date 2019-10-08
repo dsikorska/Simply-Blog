@@ -5,28 +5,41 @@ import ShortPost from './ShortPost/ShortPost';
 import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
 import { connect } from 'react-redux';
-import Input from '../UI/Input/Input';
 import Button from './../UI/Button/Button';
 import { Link } from 'react-router-dom';
 import Panel from '../UI/Panel/Panel';
+import ReactPaginate from 'react-paginate';
 
 class PostsList extends Component {
     state = {
         posts: null,
+        count: 0,
         loading: true
     }
 
     componentDidMount() {
         if (!this.state.posts) {
-            this.setState({ loading: true });
-            Axios.get('/api/blog/posts/0')
+            this.loadPosts(0);
+
+            Axios.get('/api/blog/count')
                 .then(response => {
-                    this.setState({ posts: response.data, loading: false });
+                    this.setState({ count: response.data });
                 })
                 .catch(err => {
                     console.log(err);
-                });
+                })
         }
+    }
+
+    loadPosts = (page) => {
+        this.setState({ loading: true });
+        Axios.get('/api/blog/posts/' + page)
+            .then(response => {
+                this.setState({ posts: response.data, loading: false });
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
     onDeletePost = (id) => {
@@ -46,6 +59,10 @@ class PostsList extends Component {
             .catch(err => {
                 console.log(err);
             })
+    }
+
+    onPageChangeHandler = (page) => {
+        this.loadPosts(page.selected);
     }
 
     render() {
@@ -73,22 +90,30 @@ class PostsList extends Component {
 
         return (
             <Auxiliary>
-                <div className={styles.Bar}>
-                    <div className={styles.Categories}>
-                        {this.props.isLogged ?
-                            <Link to="/new">
-                                <Button btnType="Success">New post</Button>
-                            </Link>
-                            : null}
-                        <Button btnType="Secondary">Categories</Button>
-                    </div>
-                    <div className={styles.Search}>
-                        <Input elementType="input" placeholder="Search..." />
-                        <Button btnType="Secondary">Find</Button>
-                    </div>
+                <div className={styles.Categories}>
+                    {this.props.isLogged ?
+                        <Link to="/new">
+                            <Button btnType="Success">New post</Button>
+                        </Link>
+                        : null}
                 </div>
                 <div className="Container">
                     {posts}
+                    <ReactPaginate
+                        previousLabel={'<'}
+                        previousLinkClassName={styles.PaginationLink}
+                        nextLinkClassName={styles.PaginationLink}
+                        nextLabel={'>'}
+                        breakLabel={'...'}
+                        breakLinkClassName={styles.PaginationLink}
+                        pageCount={this.state.count}
+                        pageRangeDisplayed={2}
+                        onPageChange={this.onPageChangeHandler}
+                        containerClassName={styles.Pagination}
+                        pageLinkClassName={styles.PaginationLink}
+                        activeClassName={styles.ActivePage}
+                        marginPagesDisplayed={3}
+                    />
                 </div>
             </Auxiliary>
         );

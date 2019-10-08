@@ -26,6 +26,12 @@ namespace SimplyBlog.Website.Controllers
             mapper = map;
         }
 
+        [HttpGet("count")]
+        public ActionResult<int> Count()
+        {
+            return blogRepository.CountPages();
+        }
+
         [HttpGet("posts/{page:int?}")]
         public ActionResult<IEnumerable<Post>> GetPosts(int page = 0)
         {

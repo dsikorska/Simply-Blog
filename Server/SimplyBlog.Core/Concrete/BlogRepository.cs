@@ -30,8 +30,13 @@ namespace SimplyBlog.Core.Concrete
         {
             return Entities
                 .OrderByDescending(x => x.LastModified)
-                .Skip(5 * page)
+                .Skip(5 * (page))
                 .Take(5);
+        }
+
+        public int CountPages()
+        {
+            return (int)(Math.Ceiling(Entities.Count() / 5m));
         }
 
         public Post GetById(long id)

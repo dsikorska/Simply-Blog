@@ -8,9 +8,11 @@ const shortPost = (props) => {
     return (
         <Panel>
             <Panel.header>
-                <div style={{ textAlign: "left" }}>
-                    <h3 style={{ margin: "10px 0" }}>{props.title}</h3>
-                    <small style={{ margin: "5px 0" }}>{props.date}</small>
+                <div style={{ textAlign: "left", width: "80%" }}>
+                    <Link to={{ pathname: props.id + '/' + props.title.toLowerCase().replace(' ', '-') }}>
+                        <h3 style={{ margin: "10px 0" }}>{props.title}</h3>
+                        <small style={{ margin: "5px 0" }}>{props.date}</small>
+                    </Link>
                 </div>
                 {props.isLogged ? (
                     <div>
