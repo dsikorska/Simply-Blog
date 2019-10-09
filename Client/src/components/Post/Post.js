@@ -25,13 +25,16 @@ class Post extends Component {
     }
 
     render() {
+        const tags = this.state.post ? this.state.post.categories.map(tag => {
+            return '#' + tag;
+        }) : null;
         const post = this.state.post ? (
             <div>
                 <Panel.body>
                     <div className="Container">
                         <h1 style={{ width: "100%", margin: "auto" }}>{this.state.post.title}</h1>
-                        <h4 style={{ margin: "5px 0" }}>{new Date(this.state.post.created).toLocaleString()}</h4>
-                        <p style={{ margin: "auto" }}>tags tags tags tags</p>
+                        <h4 style={{ margin: "5px 0" }}>{new Date(this.state.post.created).toLocaleDateString()}</h4>
+                        <p style={{ margin: "auto" }}>{tags.join(' ')}</p>
                     </div>
                     <div className="Container">
                         {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" /> : null}

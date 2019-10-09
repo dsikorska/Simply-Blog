@@ -26,12 +26,20 @@ namespace SimplyBlog.Core.Concrete
             base.Create(entity);
         }
 
-        public IEnumerable<Post> GetPosts(int page)
+        public IEnumerable<Post> GetPosts(int page, string category)
         {
-            return Entities
-                .OrderByDescending(x => x.Created)
-                .Skip(5 * (page))
-                .Take(5);
+            IEnumerable<Post> result = Entities
+                    .OrderByDescending(x => x.Created);
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                result = result
+                    .Where(x => x.Categories.Contains(category));
+            }
+
+            return result
+                    .Skip(5 * (page))
+                    .Take(5);
         }
 
         public int CountPages()

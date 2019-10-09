@@ -13,13 +13,15 @@ import ReactPaginate from 'react-paginate';
 class PostsList extends Component {
     state = {
         posts: null,
+        tags: null,
         count: 0,
-        loading: true
+        loading: true,
+        selectedTag: null
     }
 
     componentDidMount() {
         if (!this.state.posts) {
-            this.loadPosts(0);
+            this.loadPosts(0, null, true);
 
             Axios.get('/api/blog/count')
                 .then(response => {
@@ -31,11 +33,21 @@ class PostsList extends Component {
         }
     }
 
-    loadPosts = (page) => {
+    loadPosts = (page, category, reloadTags = false) => {
         this.setState({ loading: true });
-        Axios.get('/api/blog/posts/' + page)
+        Axios.get('/api/blog/posts/' + page + '/' + category)
             .then(response => {
-                this.setState({ posts: response.data, loading: false });
+                if (reloadTags) {
+                    let tags = new Set();
+                    response.data.forEach(post => {
+                        post.categories.forEach(tag => {
+                            tags.add(tag);
+                        })
+                    })
+                    this.setState({ posts: response.data, tags: tags, loading: false });
+                } else {
+                    this.setState({ posts: response.data, loading: false });
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -62,7 +74,12 @@ class PostsList extends Component {
     }
 
     onPageChangeHandler = (page) => {
-        this.loadPosts(page.selected);
+        this.loadPosts(page.selected, this.state.selectedTag);
+    }
+
+    tagClickedHandler = (tag) => {
+        this.setState({ selectedTag: tag })
+        this.loadPosts(0, tag);
     }
 
     render() {
@@ -80,7 +97,9 @@ class PostsList extends Component {
                     key={post.id}
                     id={post.id}
                     title={post.title}
-                    date={fullDate.toDateString()}
+                    date={fullDate.toLocaleDateString()}
+                    tags={post.categories}
+                    tagClicked={(tag) => this.tagClickedHandler(tag)}
                     content={post.content}
                     image={post.imageUri}
                     isLogged={this.props.isLogged}
@@ -88,9 +107,24 @@ class PostsList extends Component {
             });
         }
 
+        let tags = [];
+        if (this.state.tags) {
+            for (let tag of this.state.tags) {
+                tags.push(
+                    <li key={tag}>
+                        <button onClick={() => this.tagClickedHandler(tag)}>#{tag}</button>
+                    </li>)
+            }
+        }
+
         return (
             <Auxiliary>
                 <div className={styles.Categories}>
+                    <div style={{ width: "100%", margin: "auto", textAlign: "center" }}>
+                        <ul className="Tags">
+                            {tags}
+                        </ul>
+                    </div>
                     {this.props.isLogged ?
                         <Link to="/new">
                             <Button btnType="Success">New post</Button>
@@ -115,7 +149,7 @@ class PostsList extends Component {
                         marginPagesDisplayed={3}
                     />
                 </div>
-            </Auxiliary>
+            </Auxiliary >
         );
     }
 };

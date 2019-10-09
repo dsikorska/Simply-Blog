@@ -32,10 +32,11 @@ namespace SimplyBlog.Website.Controllers
             return blogRepository.CountPages();
         }
 
-        [HttpGet("posts/{page:int?}")]
-        public ActionResult<IEnumerable<Post>> GetPosts(int page = 0)
+        [HttpGet("posts/{page:int?}/{category}")]
+        public ActionResult<IEnumerable<Post>> GetPosts(string category, int page = 0)
         {
-            IEnumerable<Post> posts = blogRepository.GetPosts(page);
+            category = category == "null" ? null : category;
+            IEnumerable<Post> posts = blogRepository.GetPosts(page, category);
             IEnumerable<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x);
             return Ok(mappedPosts);
         }
@@ -77,6 +78,7 @@ namespace SimplyBlog.Website.Controllers
 
             Post newPost = mapper.Map<Post>(post);
             newPost.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+            newPost.Categories = newPost.Categories[0].Split(',').ToList();
             blogRepository.Create(newPost);
             return Ok();
         }
@@ -98,7 +100,7 @@ namespace SimplyBlog.Website.Controllers
                 {
                     p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
                 }
-                p.Categories = post.Categories;
+                p.Categories = post.Categories[0].Split(',').ToList();
                 p.Content = post.Content;
                 p.Title = post.Title;
                 p.LastModified = DateTime.UtcNow;

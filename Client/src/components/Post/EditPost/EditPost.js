@@ -21,6 +21,16 @@ class EditPost extends React.Component {
                 valid: true,
                 touched: false
             },
+            categories: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Use space to separate tags eg. programming c# blog',
+                },
+                value: '',
+                valid: false,
+                touched: false
+            },
             content: {
                 elementType: 'textarea',
                 elementConfig: {
@@ -77,6 +87,7 @@ class EditPost extends React.Component {
             this.setState({ loading: true });
             Axios.get('/api/blog/' + this.props.match.params.id)
                 .then(response => {
+                    response.data.categories = response.data.categories.join(' ');
                     this.fillForm(response.data);
                 })
                 .catch(err => {
@@ -109,6 +120,10 @@ class EditPost extends React.Component {
         }
 
         let post = new FormData();
+        const tags = this.state.form.categories.value.split(' ');
+
+        post.append("id", this.props.match.params.id);
+        post.append("categories", tags);
         post.append("title", this.state.form.title.value);
         post.append("content", this.state.form.content.value);
 

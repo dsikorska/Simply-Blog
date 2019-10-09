@@ -5,7 +5,7 @@ namespace SimplyBlog.Core.Abstract
 {
     public interface IBlogRepository : IRepository<Post>
     {
-        IEnumerable<Post> GetPosts(int page);
+        IEnumerable<Post> GetPosts(int page, string category);
         Post GetById(long id);
         IEnumerable<Comment> GetAllComments(long id);
         void AddComment(Post post, Comment comment);

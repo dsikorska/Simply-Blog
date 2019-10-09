@@ -20,6 +20,16 @@ class NewPost extends React.Component {
                 valid: false,
                 touched: false
             },
+            tags: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Use space to separate tags eg. programming c# blog',
+                },
+                value: '',
+                valid: false,
+                touched: false
+            },
             content: {
                 elementType: 'textarea',
                 elementConfig: {
@@ -77,6 +87,9 @@ class NewPost extends React.Component {
         }
 
         let post = new FormData();
+        const tags = this.state.form.tags.value.split(' ');
+
+        post.append("categories", tags)
         post.append("title", this.state.form.title.value);
         post.append("image", this.refs.image.files[0]);
         post.append("content", this.state.form.content.value);
