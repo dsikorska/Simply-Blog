@@ -38,7 +38,8 @@ class EditPost extends React.Component {
         },
         image: '',
         formIsValid: true,
-        loading: true
+        loading: true,
+        setImage: false
     }
 
     checkValidity(value, rules) {
@@ -109,8 +110,13 @@ class EditPost extends React.Component {
 
         let post = new FormData();
         post.append("title", this.state.form.title.value);
-        post.append("image", this.refs.image.files[0]);
         post.append("content", this.state.form.content.value);
+
+        if (this.state.setImage) {
+            post.append("image", this.refs.image.files[0]);
+        } else {
+            post.append("useExistingImage", "true");
+        }
 
         Axios.patch('/api/blog/' + this.props.match.params.id, post)
             .then(response => {
@@ -119,6 +125,10 @@ class EditPost extends React.Component {
             .catch(err => {
                 console.log(err);
             });
+    }
+
+    setNewImage = () => {
+        this.setState({ setImage: !this.state.setImage })
     }
 
     render() {
@@ -136,7 +146,8 @@ class EditPost extends React.Component {
                     <form onSubmit={this.onFormSubmitHandler}>
                         <div style={{ padding: "0.375rem 0.75rem" }}>
                             <div style={{ marginBottom: "10px" }}>
-                                <input type="file" name="image" ref="image" accept="image/*" className="Input" />
+                                <Button btnType="Secondary" type="button" clicked={this.setNewImage}>{this.state.setImage ? "Use existing image" : "Set new image"}</Button>
+                                {this.state.setImage ? <input type="file" name="image" ref="image" accept="image/*" className="Input" /> : null}
                             </div>
                             {this.state.image ?
                                 <div className="Img">
@@ -156,7 +167,7 @@ class EditPost extends React.Component {
                                 className={element.config.className} />
                         ))}
                         <div className="Button">
-                            <Button btnType="Success">Save</Button>
+                            <Button btnType="Success" type="submit">Save</Button>
                         </div>
                     </form>
                 </Panel.body>)

@@ -94,7 +94,10 @@ namespace SimplyBlog.Website.Controllers
 
             if (p != null)
             {
-                p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+                if (!post.UseExistingImage)
+                {
+                    p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+                }
                 p.Categories = post.Categories;
                 p.Content = post.Content;
                 p.Title = post.Title;
