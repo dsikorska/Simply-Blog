@@ -14,6 +14,7 @@ namespace SimplyBlog.Website.Models.DTOs
         public string Title { get; set; }
 
         public IFormFile Image { get; set; }
+        public bool UseExistingImage { get; set; }
 
         [Required]
         public string Content { get; set; }
