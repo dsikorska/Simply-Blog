@@ -3,23 +3,80 @@ import Axios from '../../../axios-api';
 import Button from './../../UI/Button/Button';
 import Panel from '../../UI/Panel/Panel';
 import Spinner from '../../UI/Spinner/Spinner';
+import Input from './../../UI/Input/Input';
 
 class EditPost extends React.Component {
     state = {
-        post: {
-            title: '',
-            content: '',
-            image: ''
+        form: {
+            title: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Title (required)'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: true,
+                touched: false
+            },
+            content: {
+                elementType: 'textarea',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Your text goes here (required)',
+                },
+                className: 'Textarea',
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: true,
+                touched: false
+            }
         },
+        image: '',
+        formIsValid: true,
         loading: true
     }
 
+    checkValidity(value, rules) {
+        let isValid = true;
+
+        if (!rules) {
+            return true;
+        }
+
+        if (rules.required) {
+            isValid = value.trim() !== '' && isValid;
+        }
+
+        return isValid;
+    }
+
+    inputChangedHandler = (event, inputId) => {
+        const updatedForm = { ...this.state.form };
+        const updatedFormElement = { ...updatedForm[inputId] };
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.touched = true;
+        updatedForm[inputId] = updatedFormElement;
+
+        let formIsValid = true;
+        for (let inputId in updatedForm) {
+            formIsValid = updatedForm[inputId].valid && formIsValid;
+        }
+
+        this.setState({ form: updatedForm, formIsValid: formIsValid });
+    }
+
     componentDidMount() {
-        if (this.state.post.title === '') {
+        if (this.state.form.title.value === '') {
             this.setState({ loading: true });
             Axios.get('/api/blog/' + this.props.match.params.id)
                 .then(response => {
-                    this.setState({ post: response.data, loading: false });
+                    this.fillForm(response.data);
                 })
                 .catch(err => {
                     console.log(err);
@@ -27,11 +84,35 @@ class EditPost extends React.Component {
         }
     }
 
+    fillForm = (data) => {
+        let updatedForm = { ...this.state.form };
+
+        for (let key in this.state.form) {
+            updatedForm = {
+                ...updatedForm,
+                [key]: {
+                    ...this.state.form[key],
+                    value: data[key]
+                }
+            }
+        }
+
+        this.setState({ form: updatedForm, image: data.imageUri, loading: false });
+    }
+
     onFormSubmitHandler = (e) => {
         e.preventDefault();
-        let post = new FormData(e.target);
 
-        Axios.patch('/api/blog/' + this.state.post.id, post)
+        if (!this.state.formIsValid) {
+            return;
+        }
+
+        let post = new FormData();
+        post.append("title", this.state.form.title.value);
+        post.append("image", this.refs.image.files[0]);
+        post.append("content", this.state.form.content.value);
+
+        Axios.patch('/api/blog/' + this.props.match.params.id, post)
             .then(response => {
                 this.props.history.push('/');
             })
@@ -41,23 +122,39 @@ class EditPost extends React.Component {
     }
 
     render() {
+        const formElements = [];
+        for (let key in this.state.form) {
+            formElements.push({
+                id: key,
+                config: this.state.form[key]
+            });
+        }
+
         return (
             (!this.state.loading ?
                 (<Panel.body>
                     <form onSubmit={this.onFormSubmitHandler}>
-                        <input hidden name="id" ref="id" defaultValue={this.state.post.id}></input>
-                        <input className="Input" placeholder="Title" name="title" ref="title" required defaultValue={this.state.post.title} />
-                        <div className="Img">
-                            {this.state.post.imageUri ?
-                                <div className="Block">
-                                    <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt={this.state.post.title} />
-                                </div>
-                                : null}
-                            <div className="Block">
-                                <input type="file" name="image" ref="image" accept="image/*" />
+                        <div style={{ padding: "0.375rem 0.75rem" }}>
+                            <div style={{ marginBottom: "10px" }}>
+                                <input type="file" name="image" ref="image" accept="image/*" className="Input" />
                             </div>
+                            {this.state.image ?
+                                <div className="Img">
+                                    <img src={Axios.defaults.baseURL + this.state.image} alt={this.state.form.title.value} />
+                                </div> : null}
                         </div>
-                        <textarea className="Textarea" placeholder="Content" name="content" ref="content" required value={this.state.post.content}></textarea>
+                        {formElements.map(element => (
+                            <Input
+                                key={element.id}
+                                elementType={element.config.elementType}
+                                elementConfig={element.config.elementConfig}
+                                value={element.config.value}
+                                changed={(event) => this.inputChangedHandler(event, element.id)}
+                                shouldValidate={element.config.validation}
+                                invalid={!element.config.valid}
+                                touched={element.config.touched}
+                                className={element.config.className} />
+                        ))}
                         <div className="Button">
                             <Button btnType="Success">Save</Button>
                         </div>

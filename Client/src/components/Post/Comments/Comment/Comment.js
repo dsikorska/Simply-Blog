@@ -6,9 +6,13 @@ const comment = (props) => {
     return (
         <div className="M30">
             <Panel.header>
-                <div style={{ textAlign: "left" }}>
-                    <h4 style={{ margin: "5px 0" }}>{props.author}</h4>
-                    <small style={{ margin: "5px 0" }}>{props.date}</small>
+                <div style={{ textAlign: "left", width: "80%" }}>
+                    <h4 style={{ display: "inline-block", margin: "0" }}>
+                        {props.author}
+                    </h4>
+                    <small style={{ marginLeft: "10px" }}>
+                        {props.date}
+                    </small>
                 </div>
                 <div>
                     {props.isLogged ? <Button btnType="Danger" clicked={props.onDelete}>Delete</Button> : null}

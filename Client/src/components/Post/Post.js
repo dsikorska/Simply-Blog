@@ -27,13 +27,12 @@ class Post extends Component {
     render() {
         const post = this.state.post ? (
             <div>
-                <Panel.header>
-                    <h2 style={{ width: "100%", textAlign: "left", margin: "0" }}>{this.state.post.title}</h2>
-                    <div>
-                        <p>tags</p>
-                    </div>
-                </Panel.header>
                 <Panel.body>
+                    <div className="Container">
+                        <h1 style={{ width: "100%", margin: "auto" }}>{this.state.post.title}</h1>
+                        <h4 style={{ margin: "5px 0" }}>{new Date(this.state.post.created).toLocaleString()}</h4>
+                        <p style={{ margin: "auto" }}>tags tags tags tags</p>
+                    </div>
                     <div className="Container">
                         {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" /> : null}
                         <p className="Content">
@@ -41,10 +40,6 @@ class Post extends Component {
                         </p>
                     </div>
                 </Panel.body>
-                <Panel.footer>
-                    <h5 style={{ margin: "5px 0" }}>Created: {new Date(this.state.post.created).toDateString()}</h5>
-                    <h5 style={{ margin: "5px 0" }}>Last modified: {new Date(this.state.post.lastModified).toDateString()}</h5>
-                </Panel.footer>
                 <Comments id={this.state.post.id} />
             </div>) : <Spinner />
 

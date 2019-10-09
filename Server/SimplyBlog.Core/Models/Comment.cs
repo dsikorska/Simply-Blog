@@ -10,6 +10,7 @@ namespace SimplyBlog.Core.Models
         [Required]
         public string Author { get; set; }
 
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 

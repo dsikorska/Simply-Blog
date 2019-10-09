@@ -29,7 +29,7 @@ namespace SimplyBlog.Core.Concrete
         public IEnumerable<Post> GetPosts(int page)
         {
             return Entities
-                .OrderByDescending(x => x.LastModified)
+                .OrderByDescending(x => x.Created)
                 .Skip(5 * (page))
                 .Take(5);
         }

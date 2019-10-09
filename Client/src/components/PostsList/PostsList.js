@@ -99,21 +99,22 @@ class PostsList extends Component {
                 </div>
                 <div className="Container">
                     {posts}
-                    <ReactPaginate
-                        previousLabel={'<'}
-                        previousLinkClassName={styles.PaginationLink}
-                        nextLinkClassName={styles.PaginationLink}
-                        nextLabel={'>'}
-                        breakLabel={'...'}
-                        breakLinkClassName={styles.PaginationLink}
-                        pageCount={this.state.count}
-                        pageRangeDisplayed={2}
-                        onPageChange={this.onPageChangeHandler}
-                        containerClassName={styles.Pagination}
-                        pageLinkClassName={styles.PaginationLink}
-                        activeClassName={styles.ActivePage}
-                        marginPagesDisplayed={3}
-                    />
+                    {!this.state.loading ?
+                        <ReactPaginate
+                            previousLabel={'<'}
+                            previousLinkClassName={styles.PaginationLink}
+                            nextLinkClassName={styles.PaginationLink}
+                            nextLabel={'>'}
+                            breakLabel={'...'}
+                            breakLinkClassName={styles.PaginationLink}
+                            pageCount={this.state.count}
+                            pageRangeDisplayed={2}
+                            onPageChange={this.onPageChangeHandler}
+                            containerClassName={styles.Pagination}
+                            pageLinkClassName={styles.PaginationLink}
+                            activeClassName={styles.ActivePage}
+                            marginPagesDisplayed={3}
+                        /> : null}
                 </div>
             </Auxiliary>
         );
