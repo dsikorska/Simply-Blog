@@ -4,6 +4,7 @@ import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
 import Comments from './Comments/Comments';
 import Panel from './../UI/Panel/Panel';
+import { EditorState, convertFromRaw, Editor } from 'draft-js';
 
 class Post extends Component {
     state = {
@@ -16,7 +17,13 @@ class Post extends Component {
             this.setState({ loading: true });
             Axios.get('/api/blog/' + this.props.match.params.id)
                 .then(response => {
-                    this.setState({ post: response.data, loading: false });
+                    const post = {
+                        ...response.data,
+                        content: EditorState
+                            .createWithContent(convertFromRaw(JSON.parse(response.data.content)))
+                    };
+
+                    this.setState({ post: post, loading: false });
                 })
                 .catch(err => {
                     console.log(err);
@@ -38,9 +45,9 @@ class Post extends Component {
                     </div>
                     <div className="Container">
                         {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" /> : null}
-                        <p className="Content">
-                            {this.state.post.content}
-                        </p>
+                        <div className="Content">
+                            <Editor editorState={this.state.post.content} readOnly={true} />
+                        </div>
                     </div>
                 </Panel.body>
                 <Comments id={this.state.post.id} />

@@ -4,6 +4,8 @@ import Button from './../../UI/Button/Button';
 import Panel from '../../UI/Panel/Panel';
 import Spinner from '../../UI/Spinner/Spinner';
 import Input from './../../UI/Input/Input';
+import RichTextbox from '../../UI/RichTextbox/RichTextbox';
+import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 
 class EditPost extends React.Component {
     state = {
@@ -28,20 +30,6 @@ class EditPost extends React.Component {
                     placeholder: 'Use space to separate tags eg. programming c# blog',
                 },
                 value: '',
-                valid: false,
-                touched: false
-            },
-            content: {
-                elementType: 'textarea',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Your text goes here (required)',
-                },
-                className: 'Textarea',
-                value: '',
-                validation: {
-                    required: true
-                },
                 valid: true,
                 touched: false
             }
@@ -49,7 +37,12 @@ class EditPost extends React.Component {
         image: '',
         formIsValid: true,
         loading: true,
-        setImage: false
+        setImage: false,
+        editor: EditorState.createEmpty()
+    }
+
+    onEditorChange = (editorState) => {
+        this.setState({ editor: editorState });
     }
 
     checkValidity(value, rules) {
@@ -89,6 +82,10 @@ class EditPost extends React.Component {
                 .then(response => {
                     response.data.categories = response.data.categories.join(' ');
                     this.fillForm(response.data);
+                    const content = EditorState
+                        .createWithContent(convertFromRaw(JSON.parse(response.data.content)));
+
+                    this.setState({ editor: content })
                 })
                 .catch(err => {
                     console.log(err);
@@ -125,7 +122,9 @@ class EditPost extends React.Component {
         post.append("id", this.props.match.params.id);
         post.append("categories", tags);
         post.append("title", this.state.form.title.value);
-        post.append("content", this.state.form.content.value);
+        let content = this.state.editor.getCurrentContent();
+        content = convertToRaw(content);
+        post.append("content", JSON.stringify(content));
 
         if (this.state.setImage) {
             post.append("image", this.refs.image.files[0]);
@@ -181,6 +180,10 @@ class EditPost extends React.Component {
                                 touched={element.config.touched}
                                 className={element.config.className} />
                         ))}
+                        <RichTextbox
+                            onEditorChange={this.onEditorChange}
+                            editorState={this.state.editor}
+                        />
                         <div className="Button">
                             <Button btnType="Success" type="submit">Save</Button>
                         </div>

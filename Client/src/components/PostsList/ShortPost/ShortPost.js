@@ -42,7 +42,7 @@ const shortPost = (props) => {
                     <p>{props.content.substring(0, 200)}...</p>
                 </Panel.body>
                 <Panel.footer>
-                    <p>{props.date}</p>
+                    <p style={{ margin: "0" }}>{props.date}</p>
                 </Panel.footer>
             </Link>
         </Panel>

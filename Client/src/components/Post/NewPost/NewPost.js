@@ -3,6 +3,8 @@ import Axios from '../../../axios-api';
 import Button from './../../UI/Button/Button';
 import Panel from './../../UI/Panel/Panel';
 import Input from './../../UI/Input/Input';
+import RichTextbox from '../../UI/RichTextbox/RichTextbox';
+import { EditorState, convertToRaw } from 'draft-js';
 
 class NewPost extends React.Component {
     state = {
@@ -27,26 +29,17 @@ class NewPost extends React.Component {
                     placeholder: 'Use space to separate tags eg. programming c# blog',
                 },
                 value: '',
-                valid: false,
-                touched: false
-            },
-            content: {
-                elementType: 'textarea',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Your text goes here (required)',
-                },
-                className: 'Textarea',
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
+                valid: true,
                 touched: false
             }
         },
         formIsValid: false,
-        loading: false
+        loading: false,
+        editor: EditorState.createEmpty()
+    }
+
+    onEditorChange = (editorState) => {
+        this.setState({ editor: editorState });
     }
 
     checkValidity(value, rules) {
@@ -92,7 +85,9 @@ class NewPost extends React.Component {
         post.append("categories", tags)
         post.append("title", this.state.form.title.value);
         post.append("image", this.refs.image.files[0]);
-        post.append("content", this.state.form.content.value);
+        let content = this.state.editor.getCurrentContent();
+        content = convertToRaw(content);
+        post.append("content", JSON.stringify(content));
 
         Axios.post('/api/blog/new', post)
             .then(() => {
@@ -130,6 +125,10 @@ class NewPost extends React.Component {
                             touched={element.config.touched}
                             className={element.config.className} />
                     ))}
+                    <RichTextbox
+                        onEditorChange={this.onEditorChange}
+                        editorState={this.state.editor}
+                    />
                     <div className="Button">
                         <Button btnType="Success">Save</Button>
                     </div>

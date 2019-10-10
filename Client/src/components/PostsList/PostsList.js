@@ -9,12 +9,14 @@ import Button from './../UI/Button/Button';
 import { Link } from 'react-router-dom';
 import Panel from '../UI/Panel/Panel';
 import ReactPaginate from 'react-paginate';
+import { EditorState, convertFromRaw } from 'draft-js';
 
 class PostsList extends Component {
     state = {
         posts: null,
         tags: null,
-        count: 0,
+        maxPages: 0,
+        currentPage: 0,
         loading: true,
         selectedTag: null
     }
@@ -22,14 +24,6 @@ class PostsList extends Component {
     componentDidMount() {
         if (!this.state.posts) {
             this.loadPosts(0, null, true);
-
-            Axios.get('/api/blog/count')
-                .then(response => {
-                    this.setState({ count: response.data });
-                })
-                .catch(err => {
-                    console.log(err);
-                })
         }
     }
 
@@ -37,16 +31,27 @@ class PostsList extends Component {
         this.setState({ loading: true });
         Axios.get('/api/blog/posts/' + page + '/' + category)
             .then(response => {
+                let posts = [];
+                response.data.data.forEach(post => {
+                    posts.push({
+                        ...post,
+                        content: EditorState
+                            .createWithContent(convertFromRaw(JSON.parse(post.content)))
+                            .getCurrentContent()
+                            .getPlainText()
+                    });
+                });
+
                 if (reloadTags) {
                     let tags = new Set();
-                    response.data.forEach(post => {
+                    response.data.data.forEach(post => {
                         post.categories.forEach(tag => {
                             tags.add(tag);
                         })
                     })
-                    this.setState({ posts: response.data, tags: tags, loading: false });
+                    this.setState({ posts: posts, tags: tags, maxPages: response.data.maxPages, loading: false });
                 } else {
-                    this.setState({ posts: response.data, loading: false });
+                    this.setState({ posts: posts, maxPages: response.data.maxPages, loading: false });
                 }
             })
             .catch(err => {
@@ -65,8 +70,7 @@ class PostsList extends Component {
 
         Axios.delete('/api/blog/' + id)
             .then(response => {
-                const posts = this.state.posts.filter(e => e.id !== id);
-                this.setState({ posts: posts });
+                this.loadPosts(this.state.currentPage, null, true);
             })
             .catch(err => {
                 console.log(err);
@@ -74,6 +78,7 @@ class PostsList extends Component {
     }
 
     onPageChangeHandler = (page) => {
+        this.setState({ currentPage: page.selected });
         this.loadPosts(page.selected, this.state.selectedTag);
     }
 
@@ -122,6 +127,7 @@ class PostsList extends Component {
                 <div className={styles.Categories}>
                     <div style={{ width: "100%", margin: "auto", textAlign: "center" }}>
                         <ul className="Tags">
+                            <li key="noFilter"><button onClick={() => this.tagClickedHandler(null)}>All posts</button></li>
                             {tags}
                         </ul>
                     </div>
@@ -140,7 +146,7 @@ class PostsList extends Component {
                         nextLabel={'>'}
                         breakLabel={'...'}
                         breakLinkClassName={styles.PaginationLink}
-                        pageCount={this.state.count}
+                        pageCount={this.state.maxPages}
                         pageRangeDisplayed={2}
                         onPageChange={this.onPageChangeHandler}
                         containerClassName={styles.Pagination}
