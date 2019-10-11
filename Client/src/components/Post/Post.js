@@ -4,11 +4,13 @@ import Axios from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
 import Comments from './Comments/Comments';
 import Panel from './../UI/Panel/Panel';
-import { EditorState, convertFromRaw, Editor } from 'draft-js';
+import { EditorState, convertFromRaw } from 'draft-js';
+import RichTextbox, { getPluginsDecorators } from '../UI/RichTextbox/RichTextbox';
 
 class Post extends Component {
     state = {
         post: null,
+        content: "",
         loading: true
     }
 
@@ -18,12 +20,13 @@ class Post extends Component {
             Axios.get('/api/blog/' + this.props.match.params.id)
                 .then(response => {
                     const post = {
-                        ...response.data,
-                        content: EditorState
-                            .createWithContent(convertFromRaw(JSON.parse(response.data.content)))
+                        ...response.data
                     };
+                    const contentState = convertFromRaw(JSON.parse(response.data.content));
+                    const decorators = getPluginsDecorators();
+                    const content = EditorState.createWithContent(contentState, decorators);
 
-                    this.setState({ post: post, loading: false });
+                    this.setState({ post: post, content: content, loading: false });
                 })
                 .catch(err => {
                     console.log(err);
@@ -46,7 +49,7 @@ class Post extends Component {
                     <div className="Container">
                         {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" /> : null}
                         <div className="Content">
-                            <Editor editorState={this.state.post.content} readOnly={true} />
+                            <RichTextbox editorState={this.state.content} readOnly={true} />
                         </div>
                     </div>
                 </Panel.body>

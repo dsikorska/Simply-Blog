@@ -31,7 +31,7 @@ export const Link = props => {
     );
 };
 
-const addLinkPluginPlugin = {
+const addLinkPlugin = {
     keyBindingFn(event, { getEditorState }) {
         const editorState = getEditorState();
         const selection = editorState.getSelection();
@@ -47,7 +47,7 @@ const addLinkPluginPlugin = {
         if (command !== "add-link") {
             return "not-handled";
         }
-        let link = window.prompt("Paste the link -");
+        let link = window.prompt("Paste the link: ");
         const selection = editorState.getSelection();
         if (!link) {
             setEditorState(RichUtils.toggleLink(editorState, selection, null));
@@ -75,4 +75,4 @@ const addLinkPluginPlugin = {
     ]
 };
 
-export default addLinkPluginPlugin;
+export default addLinkPlugin;

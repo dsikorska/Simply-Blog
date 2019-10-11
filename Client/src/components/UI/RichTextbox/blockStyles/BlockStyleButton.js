@@ -7,13 +7,13 @@ class BlockStyleButton extends React.Component {
     }
 
     render() {
-        let className = "RichEditor-styleButton"
+        let className = "styleButton"
         if (this.props.active) {
-            className += " RichEditor-activeButton"
+            className += "activeButton"
         } return (
-            <span className={className} onClick={this.onToggle}>
+            <button type="button" className={className} onClick={this.onToggle}>
                 {this.props.label}
-            </span>
+            </button>
         );
     }
 } export default BlockStyleButton
