@@ -1,13 +1,15 @@
 import React from 'react';
 import StyleButton from './StyleButton';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBold, faItalic, faUnderline, faHighlighter, faStrikethrough, faCode } from '@fortawesome/free-solid-svg-icons';
 
 const INLINE_STYLES = [
-    { label: 'B', style: 'BOLD' },
-    { label: 'I', style: 'ITALIC' },
-    { label: 'U', style: 'UNDERLINE' },
-    { label: 'Code', style: 'CODE' },
-    { label: 'H', style: 'HIGHLIGHT' },
-    { label: 'abc', style: 'STRIKETHROUGH' },
+    { label: <FontAwesomeIcon icon={faBold} size="lg" />, style: 'BOLD' },
+    { label: <FontAwesomeIcon icon={faItalic} size="lg" />, style: 'ITALIC' },
+    { label: <FontAwesomeIcon icon={faUnderline} size="lg" />, style: 'UNDERLINE' },
+    { label: <FontAwesomeIcon icon={faCode} size="lg" />, style: 'CODE' },
+    { label: <FontAwesomeIcon icon={faHighlighter} size="lg" />, style: 'HIGHLIGHT' },
+    { label: <FontAwesomeIcon icon={faStrikethrough} size="lg" />, style: 'STRIKETHROUGH' },
 ]
 
 const inlineStyleToolbar = (props) => {

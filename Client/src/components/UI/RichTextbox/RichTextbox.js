@@ -9,6 +9,8 @@ import MultiDecorator from "draft-js-plugins-editor/lib/Editor/MultiDecorator";
 import createHighlightPlugin from './plugins/hightlightPlugin';
 import addLinkPlugin from './plugins/addLinkPlugin';
 import InlineStyleToolbar from './styles/InlineStyleToolbar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLink, faImage } from '@fortawesome/free-solid-svg-icons';
 
 const plugins = [createLinkifyPlugin(), createHighlightPlugin(), addLinkPlugin];
 
@@ -108,10 +110,10 @@ class RichTextbox extends React.Component {
                         />
 
                         <button type="button" id="link_url" onClick={this.onAddLink} className="styleButton">
-                            UR
+                            <FontAwesomeIcon icon={faLink} size="lg" />
                         </button>
                         <button type="button" className="styleButton" onClick={this.onAddImage}>
-                            IMG
+                            <FontAwesomeIcon icon={faImage} size="lg" />
                         </button>
 
                         <BlockStyleToolbar

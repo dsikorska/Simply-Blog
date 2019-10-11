@@ -174,10 +174,6 @@ div.RichEditor-editor div.public-DraftStyleDefault-pre {
   font-family: monospace;
 }
 
-.highlight {
-background-color: rgb(255, 255, 0) !important;
-}
-
 .link {
   color: #5e93c5;
   text-decoration: none;
