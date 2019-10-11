@@ -1,13 +1,14 @@
 import React from 'react';
 import { EditorState, RichUtils, AtomicBlockUtils, CompositeDecorator } from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
-import BlockStyleToolbar, { getBlockStyle } from "./blockStyles/BlockStyleToolbar";
+import BlockStyleToolbar, { getBlockStyle } from "./styles/BlockStyleToolbar";
 import { mediaBlockRenderer } from './entities/mediaBlockRenderer';
 import createLinkifyPlugin from 'draft-js-linkify-plugin';
 import 'draft-js-linkify-plugin/lib/plugin.css';
 import MultiDecorator from "draft-js-plugins-editor/lib/Editor/MultiDecorator";
 import createHighlightPlugin from './plugins/hightlightPlugin';
 import addLinkPlugin from './plugins/addLinkPlugin';
+import InlineStyleToolbar from './styles/InlineStyleToolbar';
 
 const plugins = [createLinkifyPlugin(), createHighlightPlugin(), addLinkPlugin];
 
@@ -33,6 +34,10 @@ class RichTextbox extends React.Component {
         this.onEditorChange(RichUtils.toggleBlockType(this.props.editorState, blockType));
     };
 
+    toggleInlineStyle = (inlineStyle) => {
+        this.onEditorChange(RichUtils.toggleInlineStyle(this.props.editorState, inlineStyle));
+    }
+
     onEditorChange = (editorState) => {
         if (this.props.onEditorChange) {
             this.props.onEditorChange(editorState);
@@ -46,28 +51,6 @@ class RichTextbox extends React.Component {
             return 'handled';
         }
         return 'not-handled';
-    }
-
-    onUnderlineClick = () => {
-        this.onEditorChange(RichUtils.toggleInlineStyle(this.props.editorState, 'UNDERLINE'));
-    }
-
-    onBoldClick = () => {
-        this.onEditorChange(RichUtils.toggleInlineStyle(this.props.editorState, 'BOLD'))
-    }
-
-    onItalicClick = () => {
-        this.onEditorChange(RichUtils.toggleInlineStyle(this.props.editorState, 'ITALIC'))
-    }
-
-    onStrikeThroughClick = () => {
-        this.onEditorChange(
-            RichUtils.toggleInlineStyle(this.props.editorState, "STRIKETHROUGH")
-        );
-    };
-
-    onHighlight = () => {
-        this.onEditorChange(RichUtils.toggleInlineStyle(this.props.editorState, 'HIGHLIGHT'))
     }
 
     onAddLink = () => {
@@ -119,27 +102,24 @@ class RichTextbox extends React.Component {
             <div>
                 {!this.props.readOnly ?
                     <div className="toolbar">
-                        <button type="button" className="underline styleButton" onClick={this.onUnderlineClick}>U</button>
-                        <button type="button" className="bold styleButton" onClick={this.onBoldClick}><b>B</b></button>
-                        <button type="button" className="italic styleButton" onClick={this.onItalicClick}><em>I</em></button>
-                        <button type="button" className="highlight styleButton" onClick={this.onHighlight}>
-                            <span style={{ background: "#FFFF00" }}>H</span>
-                        </button>
-                        <button type="button" className="strikethrough styleButton" onClick={this.onStrikeThroughClick}>
-                            abc
-                        </button>
-                        <button type="button" id="link_url" onClick={this.onAddLink} className="add-link styleButton">
+                        <InlineStyleToolbar
+                            editorState={this.props.editorState}
+                            onToggle={this.toggleInlineStyle}
+                        />
+
+                        <button type="button" id="link_url" onClick={this.onAddLink} className="styleButton">
                             UR
                         </button>
                         <button type="button" className="styleButton" onClick={this.onAddImage}>
                             IMG
                         </button>
+
                         <BlockStyleToolbar
                             editorState={this.props.editorState}
                             onToggle={this.toggleBlockType}
                         />
                     </div> : null}
-                <div>
+                <div onClick={this.focus} className={this.props.readOnly ? "readOnly" : null}>
                     <Editor
                         editorState={this.props.editorState}
                         onChange={this.onEditorChange}
@@ -149,6 +129,7 @@ class RichTextbox extends React.Component {
                         ref="editor"
                         blockRendererFn={mediaBlockRenderer}
                         readOnly={this.props.readOnly}
+                        spellCheck={true}
                     />
                 </div>
             </div>

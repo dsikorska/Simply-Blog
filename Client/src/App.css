@@ -114,26 +114,6 @@ div.DraftEditor-editorContainer {
   margin-top:40px;
 }
 
-div.toolbar {
-  position: relative;
-  width: 100%;
-  background-color: #ddd;
-  padding: 10px 20px;
-  margin: auto;
-  top: 45px;
-  text-align: left;
-}
-
-div.toolbar button {
-  border: 1px solid black;
-  padding:5px;
-  margin-right:4px;
-  background-color:#fff;
-  color:black;
-  min-width: 30px;
-  cursor: pointer;
-}
-
 div.public-DraftEditorPlaceholder-root,
 div.public-DraftEditor-content {
   margin: 0 -15px -15px;
@@ -148,7 +128,24 @@ div.public-DraftEditorPlaceholder-root {
   display: none;
 }
 
-div.RichEditor-blockquote {
+div.RichEditor-editor div.public-DraftStyleDefault-pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  font-family: 'Inconsolata', 'Menlo', 'Consolas', monospace;
+  font-size: 16px;
+  padding: 20px;
+}
+
+.toolbar {
+  position: relative;
+  width: 100%;
+  background-color: #ddd;
+  padding: 10px 20px;
+  margin: auto;
+  top: 45px;
+  text-align: left;
+}
+
+.blockquote {
   border-left: 5px solid #eee;
   color: #666;
   font-family: 'Hoefler Text', 'Georgia', serif;
@@ -157,60 +154,73 @@ div.RichEditor-blockquote {
   padding: 10px 20px;
 }
 
-div.RichEditor-editor div.public-DraftStyleDefault-pre {
-  background-color: rgba(0, 0, 0, 0.05);
-  font-family: 'Inconsolata', 'Menlo', 'Consolas', monospace;
-  font-size: 16px;
-  padding: 20px;
-}
-
-div.RichEditor-controls {
-  font-family: 'Helvetica', sans-serif;
-  font-size: 14px;
-  margin-bottom: 5px;
-  user-select: none;
-}
-
-div.RichEditor-styleButton {
-  color: #999;
-  cursor: pointer;
-  margin-right: 16px;
-  padding: 2px 0;
-  display: inline-block;
-}
-
-div.RichEditor-activeButton {
-  color: #5890ff;
-}
-
-.underline,
-.bold,
-.italic,
-.highlight {
-  font-size: 1em;
-  text-align: center;
-}
-
 .strikethrough {
   text-decoration: line-through;
-  font-size: 1em;
 }
 
-button.underline {
+.underline {
   text-decoration: underline;
 }
 
-.styleButton,
-.RichEditor-styleButton {
+.bold {
+  font-weight: bold;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.code {
+  font-family: monospace;
+}
+
+.highlight {
+background-color: rgb(255, 255, 0) !important;
+}
+
+.link {
+  color: #5e93c5;
+  text-decoration: none;
+}
+
+.link:hover {
+  color: #5e93c5b4;
+}
+
+.styleButton {
   padding: 0.25em;
-  background: #f9fbfc;
-  border: none;
-  color: #3b465d;
   margin: 0.35em;
-  border-radius: 6px;
-  width: 2.5em;
   font-family: "Lato";
-  font-size: 90%;
-  box-shadow: 2px 2px edf3f9;
+  font-size: 1em;
+  text-align: center;
   height: 2.25em;
+  border: 1px solid rgba(0,0,0,0.125);
+  border-radius: 0.25rem;
+  margin-right:4px;
+  background-color:#fff;
+  color:black;
+  width: 2.5rem;
+  cursor: pointer;
+}
+
+select.styleButton {
+  width: auto !important;
+}
+
+.styleButton:hover {
+  box-shadow: 5px -5px 10px 0px rgba(0,0,0,0.2);
+}
+
+.activeButton {
+  box-shadow: 5px -5px 10px 0px rgba(0,0,0,0.2);
+  border: 1px solid black;
+  background-color: rgba(0,0,0,0.3);
+}
+
+.readOnly .DraftEditor-root {
+  border: none;
+}
+
+.readOnly .DraftEditor-editorContainer {
+  margin: 0;
 }
