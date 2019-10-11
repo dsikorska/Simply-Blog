@@ -3,6 +3,8 @@ import Axios from '../../../../axios-api';
 import Button from './../../../UI/Button/Button';
 import Panel from '../../../UI/Panel/Panel';
 import Input from './../../../UI/Input/Input';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class NewComment extends React.Component {
     state = {
@@ -149,7 +151,10 @@ class NewComment extends React.Component {
                         ))}
 
                         <div className="Button">
-                            <Button btnType="Success">Save</Button>
+                            <Button btnType="Success">
+                                <span><FontAwesomeIcon icon={faSave} /></span>
+                                Save
+                            </Button>
                         </div>
                     </form>
                 </Panel.body>

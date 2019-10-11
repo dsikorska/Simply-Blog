@@ -6,7 +6,7 @@ const blockStyleButton = (props) => {
         props.onToggle(props.style)
     }
 
-    let className = "styleButton " + props.class
+    let className = "styleButton"
     if (props.active) {
         className += " activeButton"
     }

@@ -5,6 +5,8 @@ import Panel from './../../UI/Panel/Panel';
 import Input from './../../UI/Input/Input';
 import RichTextbox from '../../UI/RichTextbox/RichTextbox';
 import { EditorState, convertToRaw } from 'draft-js';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class NewPost extends React.Component {
     state = {
@@ -111,7 +113,7 @@ class NewPost extends React.Component {
             <Panel.body>
                 <form onSubmit={this.onFormSubmitHandler}>
                     <div style={{ padding: "0.375rem 0.75rem" }}>
-                        <input type="file" name="image" ref="image" accept="image/*" className="Input" />
+                        <Input type="file" name="image" ref="image" accept="image/*" className="Input" />
                     </div>
                     {formElements.map(element => (
                         <Input
@@ -130,7 +132,10 @@ class NewPost extends React.Component {
                         editorState={this.state.editor}
                     />
                     <div className="Button">
-                        <Button btnType="Success">Save</Button>
+                        <Button btnType="Success">
+                            <span><FontAwesomeIcon icon={faSave} /></span>
+                            Save
+                        </Button>
                     </div>
                 </form>
             </Panel.body>

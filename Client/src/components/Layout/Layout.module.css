@@ -6,9 +6,10 @@
 }
 
 .NavContent {
-  width: 100%;
+  width: auto;
   text-align: center;
   font-weight: bold;
+  margin: auto;
 }
 
 .Nav a {
@@ -20,6 +21,8 @@
 
 .ActiveNavLink {
   color: grey !important;
+  padding-bottom: 3px !important;
+  border-bottom: 3px solid grey;
 }
 
 .Header {
@@ -34,4 +37,8 @@
   text-align: center;
   background: #ddd;
   margin-top: 20px;
+}
+
+.Login {
+  display: inline;
 }

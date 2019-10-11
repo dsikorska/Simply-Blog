@@ -46,8 +46,7 @@ const blockStyleToolbar = (props) => {
                         label={type.label}
                         onToggle={props.onToggle}
                         style={type.style}
-                        key={type.label}
-                        class={type.style.toLowerCase()}
+                        key={type.style}
                     />
                 );
             })}

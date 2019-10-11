@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import Panel from '../UI/Panel/Panel';
 import ReactPaginate from 'react-paginate';
 import { EditorState, convertFromRaw } from 'draft-js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faTag } from '@fortawesome/free-solid-svg-icons';
 
 class PostsList extends Component {
     state = {
@@ -117,7 +119,9 @@ class PostsList extends Component {
             for (let tag of this.state.tags) {
                 tags.push(
                     <li key={tag}>
-                        <button onClick={() => this.tagClickedHandler(tag)}>#{tag}</button>
+                        <button onClick={() => this.tagClickedHandler(tag)}>
+                            <span><FontAwesomeIcon icon={faTag} size="xs" /></span>
+                            {tag}</button>
                     </li>)
             }
         }
@@ -127,13 +131,20 @@ class PostsList extends Component {
                 <div className={styles.Categories}>
                     <div style={{ width: "100%", margin: "auto", textAlign: "center" }}>
                         <ul className="Tags">
-                            <li key="noFilter"><button onClick={() => this.tagClickedHandler(null)}>All posts</button></li>
+                            <li key="noFilter">
+                                <button onClick={() => this.tagClickedHandler(null)} style={{ height: "30px" }}>
+                                    All posts
+                                </button>
+                            </li>
                             {tags}
                         </ul>
                     </div>
                     {this.props.isLogged ?
                         <Link to="/new">
-                            <Button btnType="Success">New post</Button>
+                            <Button btnType="Success">
+                                <span><FontAwesomeIcon icon={faPlus} /></span>
+                                New post
+                                </Button>
                         </Link>
                         : null}
                 </div>

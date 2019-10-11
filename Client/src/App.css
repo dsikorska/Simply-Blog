@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 body {
@@ -87,15 +87,21 @@ form {
   margin: 0;
 }
 
+.Tags button:hover {
+  background-color: #a8a8a8;
+}
+
 .Tags li {
     display: inline-block;
     margin: 0 3px;
 }
 
 .Tags button {
+  margin: 5px 0;
   border: none;
   border-radius: 7px;
   cursor: pointer;
+  background-color: rgb(201, 201, 201);
 }
 
 .Tags button:focus {
@@ -146,32 +152,12 @@ div.RichEditor-editor div.public-DraftStyleDefault-pre {
 }
 
 .blockquote {
-  border-left: 5px solid #eee;
+  border-left: 5px solid #ddd;
   color: #666;
   font-family: 'Hoefler Text', 'Georgia', serif;
   font-style: italic;
   margin: 16px 0;
   padding: 10px 20px;
-}
-
-.strikethrough {
-  text-decoration: line-through;
-}
-
-.underline {
-  text-decoration: underline;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.italic {
-  font-style: italic;
-}
-
-.code {
-  font-family: monospace;
 }
 
 .link {
@@ -181,6 +167,7 @@ div.RichEditor-editor div.public-DraftStyleDefault-pre {
 
 .link:hover {
   color: #5e93c5b4;
+  cursor: pointer;
 }
 
 .styleButton {
@@ -219,4 +206,18 @@ select.styleButton {
 
 .readOnly .DraftEditor-editorContainer {
   margin: 0;
+}
+
+figure {
+  text-align: center;
+}
+
+button span, p span, h4 span {
+  padding-right: 12px;
+  vertical-align: baseline;
+}
+
+div span {
+  line-height: 1.8rem;
+  font-size: 1rem;
 }

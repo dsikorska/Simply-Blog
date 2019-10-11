@@ -42,11 +42,6 @@ namespace SimplyBlog.Core.Concrete
                     .Take(5);
         }
 
-        public int CountPages()
-        {
-            return (int)(Math.Ceiling(Entities.Count() / 5m));
-        }
-
         public Post GetById(long id)
         {
             return Entities.FirstOrDefault(x => x.Id == id);

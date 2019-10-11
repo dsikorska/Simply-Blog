@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './About.module.css'
 import img from '../../assets/images/burger-logo.png';
 import Panel from '../UI/Panel/Panel';
+import { connect } from 'react-redux';
 
 const about = (props) => {
     return (
@@ -28,4 +29,10 @@ const about = (props) => {
     )
 };
 
-export default about;
+const mapStateToProps = state => {
+    return {
+        isAuthenticated: state.auth.token !== null,
+    };
+}
+
+export default connect(mapStateToProps)(about);

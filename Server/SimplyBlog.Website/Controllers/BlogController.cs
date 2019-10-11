@@ -33,7 +33,14 @@ namespace SimplyBlog.Website.Controllers
             category = category == "null" ? null : category;
             IEnumerable<Post> posts = blogRepository.GetPosts(page, category);
             List<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x).ToList();
-            int maxPages = blogRepository.CountPages();
+
+            int maxPages = 1;
+
+            if (mappedPosts != null)
+            {
+                maxPages = mappedPosts.Count;
+            }
+
             ListResponse<ReadShortPostDto> result = new ListResponse<ReadShortPostDto>()
             {
                 CurrentPage = page,

@@ -10,6 +10,5 @@ namespace SimplyBlog.Core.Abstract
         IEnumerable<Comment> GetAllComments(long id);
         void AddComment(Post post, Comment comment);
         void DeleteComment(Post post, Comment comment);
-        int CountPages();
     }
 }
