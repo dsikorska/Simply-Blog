@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from './../UI/Button/Button';
 import Input from './../UI/Input/Input';
 import { connect } from 'react-redux';
-import Axios from '../../axios-api';
+import Axios, { options } from '../../axios-api';
 
 class Settings extends React.Component {
     state = {
@@ -90,11 +90,15 @@ class Settings extends React.Component {
     loginSubmitHandler = (e) => {
         e.preventDefault();
 
+        if (!this.state.login.valid) {
+            return;
+        }
+
         if (!window.confirm("Are you sure?")) {
             return;
         }
 
-        Axios.post('/api/admin/changeLogin?value=' + this.state.login.value)
+        Axios.post('/api/admin/changeLogin/' + this.state.login.value, null, options(this.props.token))
             .then(response => {
                 this.setState({ login: { ...this.state.login, value: '' } });
             }).catch(err => {
@@ -105,11 +109,15 @@ class Settings extends React.Component {
     passwordSubmitHandler = (e) => {
         e.preventDefault();
 
+        if (!this.state.password.valid) {
+            return;
+        }
+
         if (!window.confirm("Are you sure?")) {
             return;
         }
 
-        Axios.post('/api/admin/changePassword?value=' + this.state.password.value)
+        Axios.post('/api/admin/changePassword/' + this.state.password.value, null, options(this.props.token))
             .then(response => {
                 this.setState({ password: { ...this.state.password, value: '' } });
             }).catch(err => {
@@ -120,11 +128,15 @@ class Settings extends React.Component {
     tokenSubmitHandler = (e) => {
         e.preventDefault();
 
+        if (!this.state.token.valid) {
+            return;
+        }
+
         if (!window.confirm("Are you sure?")) {
             return;
         }
 
-        Axios.post('/api/admin/changeSecret?value=' + this.state.token.value)
+        Axios.post('/api/admin/changeSecret/' + this.state.token.value, null, options(this.props.token))
             .then(response => {
                 this.setState({ token: { ...this.state.token, value: '' } });
             }).catch(err => {
@@ -194,6 +206,7 @@ class Settings extends React.Component {
 const mapStateToProps = state => {
     return {
         isAuthenticated: state.auth.token !== null,
+        token: state.auth.token
     };
 }
 

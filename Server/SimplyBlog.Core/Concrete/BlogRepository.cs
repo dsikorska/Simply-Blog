@@ -26,6 +26,11 @@ namespace SimplyBlog.Core.Concrete
             base.Create(entity);
         }
 
+        public IEnumerable<string> GetTags()
+        {
+            return Entities.SelectMany(x => x.Categories).Distinct();
+        }
+
         public IEnumerable<Post> GetPosts(int page, string category)
         {
             IEnumerable<Post> result = Entities
@@ -40,6 +45,16 @@ namespace SimplyBlog.Core.Concrete
             return result
                     .Skip(5 * (page))
                     .Take(5);
+        }
+
+        public int GetMaxPages(string category)
+        {
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                return (int)(Math.Ceiling(Entities.Where(x => x.Categories.Contains(category)).Count() / 5m));
+            }
+
+            return (int)(Math.Ceiling(Entities.Count() / 5m));
         }
 
         public Post GetById(long id)

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styles from './PostsList.module.css';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
 import ShortPost from './ShortPost/ShortPost';
-import Axios from '../../axios-api';
+import Axios, { options } from '../../axios-api';
 import Spinner from '../UI/Spinner/Spinner';
 import { connect } from 'react-redux';
 import Button from './../UI/Button/Button';
@@ -45,13 +45,12 @@ class PostsList extends Component {
                 });
 
                 if (reloadTags) {
-                    let tags = new Set();
-                    response.data.data.forEach(post => {
-                        post.categories.forEach(tag => {
-                            tags.add(tag);
+                    Axios.get('/api/blog/tags')
+                        .then(tagsResponse => {
+                            this.setState({ posts: posts, tags: tagsResponse.data, maxPages: response.data.maxPages, loading: false });
+                        }).catch(err => {
+                            console.log(err);
                         })
-                    })
-                    this.setState({ posts: posts, tags: tags, maxPages: response.data.maxPages, loading: false });
                 } else {
                     this.setState({ posts: posts, maxPages: response.data.maxPages, loading: false });
                 }
@@ -70,7 +69,7 @@ class PostsList extends Component {
             return;
         }
 
-        Axios.delete('/api/blog/' + id)
+        Axios.delete('/api/blog/' + id, options(this.props.token))
             .then(response => {
                 this.loadPosts(this.state.currentPage, null, true);
             })
@@ -173,7 +172,8 @@ class PostsList extends Component {
 
 const mapStateToProps = state => {
     return {
-        isLogged: state.auth.isLogged
+        isLogged: state.auth.isLogged,
+        token: state.auth.token
     }
 }
 
