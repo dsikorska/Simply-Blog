@@ -128,7 +128,7 @@ namespace SimplyBlog.Website
         {
             if (newSecret.Length < 64)
             {
-                throw new ArgumentException("New secret must be at least 64 characters length.");
+                throw new ArgumentException("New secret must be at least 64 characters long.");
             }
 
             writableSecret.Update(opt =>

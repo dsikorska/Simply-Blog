@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Models;
@@ -33,19 +32,29 @@ namespace SimplyBlog.Tests
             return Enumerable.Empty<Post>();
         }
 
-        public IEnumerable<Comment> GetAllComments(Guid id)
+        public IEnumerable<Comment> GetAllComments(long id)
         {
             return Enumerable.Empty<Comment>();
         }
 
-        public Post GetById(Guid id)
+        public Post GetById(long id)
         {
             return new Post();
         }
 
-        public IEnumerable<Post> GetPosts(int page)
+        public int GetMaxPages(string category)
+        {
+            return 0;
+        }
+
+        public IEnumerable<Post> GetPosts(int page, string category)
         {
             return Enumerable.Empty<Post>();
+        }
+
+        public IEnumerable<string> GetTags()
+        {
+            return Enumerable.Empty<string>();
         }
 
         public void Update(Post entity)

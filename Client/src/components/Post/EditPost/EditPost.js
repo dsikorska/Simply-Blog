@@ -1,5 +1,6 @@
 import React from 'react';
-import Axios from '../../../axios-api';
+import { connect } from 'react-redux';
+import Axios, { options } from '../../../axios-api';
 import Button from './../../UI/Button/Button';
 import Panel from '../../UI/Panel/Panel';
 import Spinner from '../../UI/Spinner/Spinner';
@@ -134,7 +135,7 @@ class EditPost extends React.Component {
             post.append("useExistingImage", "true");
         }
 
-        Axios.patch('/api/blog/' + this.props.match.params.id, post)
+        Axios.patch('/api/blog/' + this.props.match.params.id, post, options(this.props.token))
             .then(response => {
                 this.props.history.push('/');
             })
@@ -163,7 +164,7 @@ class EditPost extends React.Component {
                         <div style={{ padding: "0.375rem 0.75rem" }}>
                             <div style={{ marginBottom: "10px" }}>
                                 <Button btnType="Secondary" type="button" clicked={this.setNewImage}>{this.state.setImage ? "Use existing image" : "Set new image"}</Button>
-                                {this.state.setImage ? <Input type="file" name="image" ref="image" accept="image/*" className="Input" /> : null}
+                                {this.state.setImage ? <input type="file" name="image" ref="image" accept="image/*" className="Input" /> : null}
                             </div>
                             {this.state.image ?
                                 <div className="Img">
@@ -202,4 +203,10 @@ class EditPost extends React.Component {
     }
 }
 
-export default EditPost;
+const mapStateToProps = state => {
+    return {
+        token: state.auth.token
+    };
+}
+
+export default connect(mapStateToProps)(EditPost);

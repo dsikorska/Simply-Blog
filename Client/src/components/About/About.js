@@ -4,6 +4,7 @@ import img from '../../assets/images/burger-logo.png';
 import Panel from '../UI/Panel/Panel';
 import { connect } from 'react-redux';
 
+//todo to, settings do formy
 const about = (props) => {
     return (
         <Panel.body>

@@ -1,5 +1,6 @@
 import React from 'react';
-import Axios from '../../../axios-api';
+import { connect } from 'react-redux';
+import Axios, { options } from '../../../axios-api';
 import Button from './../../UI/Button/Button';
 import Panel from './../../UI/Panel/Panel';
 import Input from './../../UI/Input/Input';
@@ -91,7 +92,7 @@ class NewPost extends React.Component {
         content = convertToRaw(content);
         post.append("content", JSON.stringify(content));
 
-        Axios.post('/api/blog/new', post)
+        Axios.post('/api/blog/new', post, options(this.props.token))
             .then(() => {
                 this.props.history.push('/');
             })
@@ -113,7 +114,7 @@ class NewPost extends React.Component {
             <Panel.body>
                 <form onSubmit={this.onFormSubmitHandler}>
                     <div style={{ padding: "0.375rem 0.75rem" }}>
-                        <Input type="file" name="image" ref="image" accept="image/*" className="Input" />
+                        <input type="file" name="image" ref="image" accept="image/*" className="Input" />
                     </div>
                     {formElements.map(element => (
                         <Input
@@ -143,4 +144,10 @@ class NewPost extends React.Component {
     }
 }
 
-export default NewPost;
+const mapStateToProps = state => {
+    return {
+        token: state.auth.token
+    };
+}
+
+export default connect(mapStateToProps)(NewPost);

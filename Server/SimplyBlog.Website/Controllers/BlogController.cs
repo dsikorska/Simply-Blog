@@ -34,12 +34,7 @@ namespace SimplyBlog.Website.Controllers
             IEnumerable<Post> posts = blogRepository.GetPosts(page, category);
             List<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x).ToList();
 
-            int maxPages = 1;
-
-            if (mappedPosts != null)
-            {
-                maxPages = mappedPosts.Count;
-            }
+            int maxPages = blogRepository.GetMaxPages(category);
 
             ListResponse<ReadShortPostDto> result = new ListResponse<ReadShortPostDto>()
             {
@@ -48,6 +43,12 @@ namespace SimplyBlog.Website.Controllers
                 Data = mappedPosts
             };
             return Ok(result);
+        }
+
+        [HttpGet("tags")]
+        public ActionResult<List<string>> GetTags()
+        {
+            return blogRepository.GetTags().ToList();
         }
 
         [HttpGet("{id}")]

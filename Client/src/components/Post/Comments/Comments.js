@@ -1,5 +1,5 @@
 import React from 'react';
-import Axios from '../../../axios-api';
+import Axios, { options } from '../../../axios-api';
 import Spinner from './../../UI/Spinner/Spinner';
 import Comment from './Comment/Comment';
 import NewComment from './NewComment/NewComment';
@@ -27,7 +27,7 @@ class Comments extends React.Component {
             return;
         }
 
-        Axios.delete('/api/blog/' + this.props.id + '/' + id)
+        Axios.delete('/api/blog/' + this.props.id + '/' + id, options(this.props.token))
             .then(response => {
                 const comments = this.state.comments.filter(e => e.id !== id);
                 this.setState({ comments: comments });
@@ -82,7 +82,8 @@ class Comments extends React.Component {
 
 const mapStateToProps = state => {
     return {
-        isLogged: state.auth.isLogged
+        isLogged: state.auth.isLogged,
+        token: state.auth.token
     }
 }
 
