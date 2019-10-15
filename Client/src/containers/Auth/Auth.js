@@ -5,6 +5,8 @@ import * as actions from '../../store/actions/index';
 import { connect } from 'react-redux';
 import Spinner from './../../components/UI/Spinner/Spinner';
 import { Redirect } from 'react-router-dom';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class Auth extends Component {
     state = {
@@ -129,7 +131,12 @@ class Auth extends Component {
                 {errorMessage}
                 <form onSubmit={this.submitHandler}>
                     {form}
-                    <Button btnType="Success">Login</Button>
+                    <div className="Button">
+                        <Button btnType="Success">
+                            <span><FontAwesomeIcon icon={faSignInAlt} /></span>
+                            Login
+                            </Button>
+                    </div>
                 </form>
             </div>
         );

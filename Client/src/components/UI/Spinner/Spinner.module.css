@@ -29,3 +29,8 @@
     transform: rotate(1800deg);
   }
 }
+
+.SpinnerContainer {
+  width: 100%;
+  margin: 20px 0;
+}

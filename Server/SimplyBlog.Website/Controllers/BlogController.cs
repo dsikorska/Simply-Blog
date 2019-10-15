@@ -10,6 +10,7 @@ using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Models.DTOs;
+using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Website.Controllers
 {
@@ -26,16 +27,31 @@ namespace SimplyBlog.Website.Controllers
             mapper = map;
         }
 
-        [HttpGet("posts/{page:int}")]
-        public ActionResult<IEnumerable<Post>> GetPosts(int page = 0)
+        [HttpGet("posts/{page:int?}/{category}")]
+        public ActionResult<ListResponse<Post>> GetPosts(string category, int page = 0)
         {
-            IEnumerable<Post> posts = blogRepository.GetPosts(page);
-            IEnumerable<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x);
-            return Ok(mappedPosts);
+            category = category == "null" ? null : category;
+            IEnumerable<Post> posts = blogRepository.GetPosts(page, category);
+            List<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x).ToList();
+
+            int maxPages = 1;
+
+            if (mappedPosts != null)
+            {
+                maxPages = mappedPosts.Count;
+            }
+
+            ListResponse<ReadShortPostDto> result = new ListResponse<ReadShortPostDto>()
+            {
+                CurrentPage = page,
+                MaxPages = maxPages,
+                Data = mappedPosts
+            };
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Post> GetPost(Guid id, [FromQuery]bool shortPost = false)
+        public ActionResult<Post> GetPost(long id, [FromQuery]bool shortPost = false)
         {
             Post post = blogRepository.GetById(id);
 
@@ -55,7 +71,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [HttpGet("comments/{id}")]
-        public ActionResult<IEnumerable<Comment>> GetAllPostComments(Guid id)
+        public ActionResult<IEnumerable<Comment>> GetAllPostComments(long id)
         {
             return Ok(blogRepository.GetAllComments(id));
         }
@@ -71,13 +87,14 @@ namespace SimplyBlog.Website.Controllers
 
             Post newPost = mapper.Map<Post>(post);
             newPost.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+            newPost.Categories = newPost.Categories[0]?.Split(',').ToList();
             blogRepository.Create(newPost);
             return Ok();
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPatch("{id}")]
-        public async Task<ActionResult> EditPost(EditPostDto post)
+        public async Task<ActionResult> EditPost([FromForm]EditPostDto post)
         {
             if (!ModelState.IsValid)
             {
@@ -88,8 +105,11 @@ namespace SimplyBlog.Website.Controllers
 
             if (p != null)
             {
-                p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
-                p.Categories = post.Categories;
+                if (!post.UseExistingImage)
+                {
+                    p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+                }
+                p.Categories = post.Categories[0]?.Split(',').ToList();
                 p.Content = post.Content;
                 p.Title = post.Title;
                 p.LastModified = DateTime.UtcNow;
@@ -104,7 +124,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public ActionResult DeletePost(Guid id)
+        public ActionResult DeletePost(long id)
         {
             Post post = blogRepository.GetById(id);
 
@@ -118,7 +138,7 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [HttpPost("{id}/new")]
-        public ActionResult CreateComment(Guid id, Comment comment)
+        public ActionResult CreateComment(long id, Comment comment)
         {
             if (!ModelState.IsValid)
             {
@@ -138,7 +158,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{postId}/{id}")]
-        public ActionResult DeleteComment(Guid postId, Guid id)
+        public ActionResult DeleteComment(long postId, Guid id)
         {
             Post post = blogRepository.GetById(postId);
             Comment comment = post.Comments.Select(x => x).FirstOrDefault(x => x.Id == id);

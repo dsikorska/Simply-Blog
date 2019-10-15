@@ -4,6 +4,7 @@ import styles from './Input.module.css';
 const input = (props) => {
     let inputElement = null;
     const inputClasses = [styles.InputElement];
+    inputClasses.push(props.className);
 
     if (props.invalid && props.shouldValidate && props.touched) {
         inputClasses.push(styles.Invalid);
@@ -43,13 +44,14 @@ const input = (props) => {
                     className={inputClasses.join(' ')}
                     {...props.elementConfig}
                     value={props.value}
-                    onChange={props.changed} />
+                    onChange={props.changed}
+                    placeholder={props.placeholder} />
             break;
     }
 
     return (
         <div className={styles.Input}>
-            <label className={styles.Label}>{props.label}</label>
+            {props.label ? <label className={styles.Label}>{props.label}</label> : null}
             {inputElement}
         </div>
     );

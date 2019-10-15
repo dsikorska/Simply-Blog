@@ -1,0 +1,48 @@
+.Categories {
+  width: 100%;
+  padding: 0 10px;
+}
+
+.Bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Pagination {
+  list-style: none;
+  width: 100%;
+  display: inline-block;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.Pagination li {
+  display: inline-block;
+  border: 1px solid rgba(0,0,0,0.125);
+  border-radius: 0.25rem;
+  padding: 10px 5px;
+  margin: 2px;
+  box-shadow: 5px -5px 10px 0px rgba(0,0,0,0.2);
+  background-color: #fff;
+}
+
+.PaginationLink {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.PaginationLink:focus {
+  outline: none;
+}
+
+.Pagination li:hover:not(.ActivePage) {
+  background-color: #ddd;
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.6);
+}
+
+.ActivePage {
+  background-color: #6c757d !important;
+  color: #fff;
+}

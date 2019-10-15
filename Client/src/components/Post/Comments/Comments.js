@@ -4,6 +4,7 @@ import Spinner from './../../UI/Spinner/Spinner';
 import Comment from './Comment/Comment';
 import NewComment from './NewComment/NewComment';
 import { connect } from 'react-redux';
+import Panel from '../../UI/Panel/Panel';
 
 class Comments extends React.Component {
     state = {
@@ -13,33 +14,42 @@ class Comments extends React.Component {
 
     componentDidMount() {
         if (!this.state.comments) {
-            this.setState({ loading: true });
-            Axios.get('/api/blog/comments/' + this.props.id)
-                .then(response => {
-                    this.setState({ comments: response.data, loading: false });
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            this.loadComments();
         }
     }
-    //todo auth
+
     onDeleteCommentHandler = (id) => {
         if (!this.props.isLogged) {
             return;
         }
 
+        if (!window.confirm("Are you sure?")) {
+            return;
+        }
+
         Axios.delete('/api/blog/' + this.props.id + '/' + id)
             .then(response => {
-                console.log(response);
+                const comments = this.state.comments.filter(e => e.id !== id);
+                this.setState({ comments: comments });
             })
             .catch(err => {
                 console.log(err);
             })
     }
 
+    loadComments = () => {
+        this.setState({ loading: true });
+        Axios.get('/api/blog/comments/' + this.props.id)
+            .then(response => {
+                this.setState({ comments: response.data, loading: false });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
+
     render() {
-        let comments = <p>No comments!</p>
+        let comments = <Panel.body><p>No comments!</p></Panel.body>
 
         if (this.state.loading) {
             comments = <Spinner />
@@ -49,19 +59,21 @@ class Comments extends React.Component {
             comments = this.state.comments.map(comment => {
                 const fullDate = new Date(Date.parse(comment.created));
 
-                return <Comment
-                    key={comment.created}
-                    author={comment.author}
-                    date={fullDate.toDateString()}
-                    content={comment.content}
-                    onDelete={() => this.onDeleteCommentHandler(comment.id)}
-                    isLogged={this.props.isLogged} />
+                return (
+                    <Comment
+                        key={comment.created}
+                        author={comment.author}
+                        date={fullDate.toDateString()}
+                        content={comment.content}
+                        onDelete={() => this.onDeleteCommentHandler(comment.id)}
+                        isLogged={this.props.isLogged} />
+                )
             });
         }
 
         return (
             <div>
-                <NewComment id={this.props.id} />
+                <NewComment id={this.props.id} submit={this.loadComments} />
                 {comments}
             </div>
         );

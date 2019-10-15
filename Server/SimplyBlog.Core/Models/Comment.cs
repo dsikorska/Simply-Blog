@@ -5,8 +5,9 @@ namespace SimplyBlog.Core.Models
 {
     public class Comment : Entity<Guid>
     {
-        public Guid PostId { get; set; }
+        public long PostId { get; set; }
 
+        [Required]
         public string Author { get; set; }
 
         [Required]

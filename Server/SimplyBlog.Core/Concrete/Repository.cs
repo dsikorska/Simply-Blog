@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SimplyBlog.Core.Abstract;
-using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Core.Concrete
 {
-    public class Repository<T> : IRepository<T> where T : Entity<Guid>
+    public abstract class Repository<T> : IRepository<T> where T : class
     {
         private readonly XmlContext _context;
         private IList<T> _entities;
@@ -30,7 +28,7 @@ namespace SimplyBlog.Core.Concrete
 
         public virtual void Delete(T entity)
         {
-            if (XmlEntities.Any(x => x.Id.Equals(entity.Id)))
+            if (XmlEntities.Contains(entity))
             {
                 XmlEntities.Remove(entity);
                 _context.SaveChanges<T>(XmlEntities);
@@ -40,11 +38,6 @@ namespace SimplyBlog.Core.Concrete
         public virtual IEnumerable<T> GetAll()
         {
             return XmlEntities;
-        }
-
-        public virtual T GetById(Guid id)
-        {
-            return Entities.FirstOrDefault(x => x.Id.Equals(id));
         }
 
         public virtual void Update(T entity)
