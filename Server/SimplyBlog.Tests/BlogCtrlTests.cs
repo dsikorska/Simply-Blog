@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Controllers;
 using SimplyBlog.Website.Mapping;
+using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Tests
 {
@@ -27,7 +28,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void GetAllPosts()
         {
-            ActionResult<IEnumerable<Post>> result = blogController.GetPosts(0);
+            ActionResult<ListResponse<Post>> result = blogController.GetPosts(null);
 
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
             Assert.IsNotNull((result.Result as OkObjectResult).Value);
@@ -36,7 +37,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void GetPost()
         {
-            ActionResult<Post> result = blogController.GetPost(Guid.NewGuid());
+            ActionResult<Post> result = blogController.GetPost(0);
 
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
             Assert.IsNotNull((result.Result as OkObjectResult).Value);
@@ -45,7 +46,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void GetAllPostComments()
         {
-            ActionResult<IEnumerable<Comment>> result = blogController.GetAllPostComments(Guid.NewGuid());
+            ActionResult<IEnumerable<Comment>> result = blogController.GetAllPostComments(0);
 
             Assert.IsInstanceOf<OkObjectResult>(result.Result);
             Assert.IsNotNull((result.Result as OkObjectResult).Value);
@@ -65,7 +66,14 @@ namespace SimplyBlog.Tests
         [Test]
         public async Task CreatePost_ValidModel_ReturnsOk()
         {
-            ActionResult result = await blogController.CreatePost(new Website.Models.DTOs.NewPostDto());
+            ActionResult result = await blogController.CreatePost(
+                new Website.Models.DTOs.NewPostDto
+                {
+                    Categories = new List<string> { "test" },
+                    Content = "test",
+                    Image = null,
+                    Title = "test"
+                });
 
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -73,7 +81,15 @@ namespace SimplyBlog.Tests
         [Test]
         public async Task EditPost_ValidModel_ReturnsOk()
         {
-            ActionResult result = await blogController.EditPost(new Website.Models.DTOs.EditPostDto());
+            ActionResult result = await blogController.EditPost(
+                new Website.Models.DTOs.EditPostDto
+                {
+                    Title = "test",
+                    Image = null,
+                    Content = "test",
+                    Categories = new List<string> { "test" },
+                    UseExistingImage = true
+                });
 
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -92,7 +108,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void DeletePost()
         {
-            ActionResult result = blogController.DeletePost(Guid.NewGuid());
+            ActionResult result = blogController.DeletePost(0);
 
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -102,7 +118,7 @@ namespace SimplyBlog.Tests
         {
             blogController.ModelState.AddModelError("", "");
 
-            ActionResult result = blogController.CreateComment(Guid.NewGuid(), new Comment());
+            ActionResult result = blogController.CreateComment(0, new Comment());
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.IsNotNull((result as BadRequestObjectResult).Value);
@@ -111,7 +127,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void CreateComment_ValidModel_ReturnsOk()
         {
-            ActionResult result = blogController.CreateComment(Guid.NewGuid(), new Comment());
+            ActionResult result = blogController.CreateComment(0, new Comment());
 
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -119,7 +135,7 @@ namespace SimplyBlog.Tests
         [Test]
         public void DeleteComment_BadId_ReturnsNotFound()
         {
-            ActionResult result = blogController.DeleteComment(Guid.NewGuid(), Guid.NewGuid());
+            ActionResult result = blogController.DeleteComment(0, Guid.NewGuid());
 
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
