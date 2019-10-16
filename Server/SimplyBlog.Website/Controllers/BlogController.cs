@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
+using SimplyBlog.Website.Configuration;
 using SimplyBlog.Website.Models.DTOs;
 using SimplyBlog.Website.Models.Response;
 
@@ -20,11 +21,24 @@ namespace SimplyBlog.Website.Controllers
     {
         private readonly IBlogRepository blogRepository;
         private readonly IMapper mapper;
+        private readonly IWritableOptions<AboutWritableOption> about;
 
-        public BlogController(IBlogRepository repository, IMapper map)
+        public BlogController(IBlogRepository repository, IMapper map, IWritableOptions<AboutWritableOption> about)
         {
             blogRepository = repository;
             mapper = map;
+            this.about = about;
+        }
+
+        [HttpGet("about")]
+        public ActionResult<ReadAboutDto> GetAbout()
+        {
+            return new ReadAboutDto
+            {
+                About = about.Value.About,
+                ImageUri = ImageHandler.GetImageUri(about.Value.ImageId),
+                Contacts = about.Value.Contacts
+            };
         }
 
         [HttpGet("posts/{page:int?}/{category}")]

@@ -32,6 +32,7 @@ namespace SimplyBlog.Website
             // Ref: https://forums.asp.net/t/2148624.aspx?can+we+update+appsettings+json+in+controller+
             services.ConfigureWritable<Credentials>(Configuration.GetSection("credentials"));
             services.ConfigureWritable<Secret>(Configuration.GetSection("secret"));
+            services.ConfigureWritable<AboutWritableOption>(Configuration.GetSection("about"));
 
             string path = Environment.CurrentDirectory + @"\Data";
             Directory.CreateDirectory(path);

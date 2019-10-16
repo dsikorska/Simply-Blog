@@ -3,8 +3,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
+using SimplyBlog.Core.Concrete;
 using SimplyBlog.Website.Configuration;
+using SimplyBlog.Website.Models.DTOs;
 using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Website
@@ -13,11 +16,13 @@ namespace SimplyBlog.Website
     {
         private readonly IWritableOptions<Credentials> writableCredentials;
         private readonly IWritableOptions<Secret> writableSecret;
+        private readonly IWritableOptions<AboutWritableOption> writableAbout;
 
-        public AppService(IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret)
+        public AppService(IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret, IWritableOptions<AboutWritableOption> writableAbout)
         {
             this.writableCredentials = writableCredentials;
             this.writableSecret = writableSecret;
+            this.writableAbout = writableAbout;
         }
 
         public LoginResponse Authenticate(string username, string password)
@@ -134,6 +139,23 @@ namespace SimplyBlog.Website
             writableSecret.Update(opt =>
             {
                 opt.Value = newSecret;
+            });
+        }
+
+        public async Task UpdateAbout(EditAboutDto model)
+        {
+            Guid? imageId = writableAbout.Value.ImageId;
+
+            if (!model.UseExistingImage)
+            {
+                imageId = await ImageHandler.SaveImageToFile(model.Image);
+            }
+
+            writableAbout.Update(opt =>
+            {
+                opt.About = model.About;
+                opt.ImageId = imageId;
+                opt.Contacts = model.Contacts;
             });
         }
     }

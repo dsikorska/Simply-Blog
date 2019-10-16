@@ -3,17 +3,17 @@
   flex-wrap: wrap;
 }
 
-.Details p {
-  width: 70%;
-}
-
 .Details img {
-  width: 25%;
+  max-width: 25%;  
   height: auto;
   margin: 20px; 
 }
 
 .Contact {
-  width: 60%;
+  width: 100%;
   text-align: center;
+}
+
+.About {
+  width: 100%;
 }
