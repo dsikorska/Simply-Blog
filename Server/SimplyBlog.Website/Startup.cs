@@ -33,6 +33,7 @@ namespace SimplyBlog.Website
             services.ConfigureWritable<Credentials>(Configuration.GetSection("credentials"));
             services.ConfigureWritable<Secret>(Configuration.GetSection("secret"));
             services.ConfigureWritable<AboutWritableOption>(Configuration.GetSection("about"));
+            services.ConfigureWritable<HeaderWritableOption>(Configuration.GetSection("header"));
 
             string path = Environment.CurrentDirectory + @"\Data";
             Directory.CreateDirectory(path);

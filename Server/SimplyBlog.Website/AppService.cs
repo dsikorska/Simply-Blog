@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Website.Configuration;
@@ -17,12 +18,14 @@ namespace SimplyBlog.Website
         private readonly IWritableOptions<Credentials> writableCredentials;
         private readonly IWritableOptions<Secret> writableSecret;
         private readonly IWritableOptions<AboutWritableOption> writableAbout;
+        private readonly IWritableOptions<HeaderWritableOption> writableHeader;
 
-        public AppService(IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret, IWritableOptions<AboutWritableOption> writableAbout)
+        public AppService(IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret, IWritableOptions<AboutWritableOption> writableAbout, IWritableOptions<HeaderWritableOption> writableHeader)
         {
             this.writableCredentials = writableCredentials;
             this.writableSecret = writableSecret;
             this.writableAbout = writableAbout;
+            this.writableHeader = writableHeader;
         }
 
         public LoginResponse Authenticate(string username, string password)
@@ -155,7 +158,15 @@ namespace SimplyBlog.Website
             {
                 opt.About = model.About;
                 opt.ImageId = imageId;
-                opt.Contacts = model.Contacts;
+            });
+        }
+
+        public async Task UpdateHeader(IFormFile image)
+        {
+            Guid? imageId = await ImageHandler.SaveImageToFile(image);
+            writableHeader.Update(opt =>
+            {
+                opt.ImageId = imageId;
             });
         }
     }

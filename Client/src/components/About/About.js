@@ -5,18 +5,14 @@ import Axios, { options } from '../../axios-api';
 import Button from '../UI/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
-import * as Icon from '@fortawesome/free-brands-svg-icons';
 import Auxiliary from './../../hoc/Auxiliary/Auxiliary';
 import RichTextbox from '../UI/RichTextbox/RichTextbox';
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
-//todo to, settings do formy
 class About extends React.Component {
     state = {
         image: null,
-        contacts: null,
         loading: true,
         editMode: false,
         editor: EditorState.createEmpty(),
@@ -33,7 +29,7 @@ class About extends React.Component {
                 .then(response => {
                     const content = EditorState
                         .createWithContent(convertFromRaw(JSON.parse(response.data.about)));
-                    this.setState({ image: response.data.imageUri, loading: false, editor: content, contacts: response.data.contacts });
+                    this.setState({ image: response.data.imageUri, loading: false, editor: content });
                 }).catch(err => {
                     console.log(err);
                     this.setState({ loading: false });
@@ -55,16 +51,6 @@ class About extends React.Component {
             about.append("useExistingImage", "true");
         }
 
-        const rawContacts = this.refs.contacts.value.split(' ');
-        let contacts = [];
-        rawContacts.forEach(element => {
-            const contact = element.split(':');
-            contacts.push({
-                [contact[0]]: contact[1] + contact[2]
-            });
-        });
-        about.append("contacts", JSON.stringify(contacts));
-
         Axios.post('/api/admin/about', about, options(this.props.token))
             .then(response => {
                 this.setState({ editMode: false });
@@ -75,26 +61,17 @@ class About extends React.Component {
     }
 
     render() {
-        let contacts = [];
-        if (this.state.contacts) {
-            this.state.contacts.map(element => {
-                return (
-                    <Link to={element.value}>
-                        <FontAwesomeIcon icon={Icon[element.key]} size="3x" className="link" style={{ margin: "0 5px" }} />
-                    </Link>
-                );
-            });
-        }
-
         return (
             <Panel.body>
                 <div className={styles.About}>
-                    <div style={{ width: "100%", textAlign: "right" }}>
-                        <Button btnType="Secondary" clicked={() => this.setState({ editMode: !this.state.editMode })}>
-                            <span><FontAwesomeIcon icon={faEdit} /></span>
-                            Edit
+                    {this.props.isAuthenticated ?
+                        <div style={{ width: "100%", textAlign: "right" }}>
+                            <Button btnType="Secondary" clicked={() => this.setState({ editMode: !this.state.editMode })}>
+                                <span><FontAwesomeIcon icon={faEdit} /></span>
+                                Edit
                         </Button>
-                    </div>
+                        </div>
+                        : null}
                     {this.state.editMode ?
                         <form onSubmit={this.submitFormHandler}>
                             <div style={{ padding: "0.375rem 0.75rem" }}>
@@ -111,11 +88,6 @@ class About extends React.Component {
                                 onEditorChange={this.onEditorChange}
                                 editorState={this.state.editor}
                             />
-                            <div className={styles.Contact}>
-                                <h4>Contact Info</h4>
-                                <small>FontAwesomeIconName:URL (use "space" to separate key:value) eg. faLinkedin:https://linkedin.com/ faFacebook:https://facebook.com/</small>
-                                <input name="contacts" ref="contacts" type="text" className="Input" />
-                            </div>
                             <div className="Button">
                                 <Button btnType="Success">
                                     <span><FontAwesomeIcon icon={faSave} /></span>
@@ -134,11 +106,6 @@ class About extends React.Component {
                                         readOnly={true}
                                     />
                                 </div>
-                            </div>
-                            <div className={styles.Contact}>
-                                <span>
-                                    {contacts}
-                                </span>
                             </div>
                         </Auxiliary>}
                 </div>

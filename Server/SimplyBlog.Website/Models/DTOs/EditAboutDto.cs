@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace SimplyBlog.Website.Models.DTOs
 {
@@ -8,6 +7,5 @@ namespace SimplyBlog.Website.Models.DTOs
         public string About { get; set; }
         public IFormFile Image { get; set; }
         public bool UseExistingImage { get; set; }
-        public Dictionary<string, string> Contacts { get; set; } = new Dictionary<string, string>();
     }
 }

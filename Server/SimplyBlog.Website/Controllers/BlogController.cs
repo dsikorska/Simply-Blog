@@ -22,12 +22,20 @@ namespace SimplyBlog.Website.Controllers
         private readonly IBlogRepository blogRepository;
         private readonly IMapper mapper;
         private readonly IWritableOptions<AboutWritableOption> about;
+        private readonly IWritableOptions<HeaderWritableOption> header;
 
-        public BlogController(IBlogRepository repository, IMapper map, IWritableOptions<AboutWritableOption> about)
+        public BlogController(IBlogRepository repository, IMapper map, IWritableOptions<AboutWritableOption> about, IWritableOptions<HeaderWritableOption> header)
         {
             blogRepository = repository;
             mapper = map;
             this.about = about;
+            this.header = header;
+        }
+
+        [HttpGet("header")]
+        public ActionResult<string> GetHeader()
+        {
+            return ImageHandler.GetImageUri(header.Value.ImageId);
         }
 
         [HttpGet("about")]
@@ -36,8 +44,7 @@ namespace SimplyBlog.Website.Controllers
             return new ReadAboutDto
             {
                 About = about.Value.About,
-                ImageUri = ImageHandler.GetImageUri(about.Value.ImageId),
-                Contacts = about.Value.Contacts
+                ImageUri = ImageHandler.GetImageUri(about.Value.ImageId)
             };
         }
 

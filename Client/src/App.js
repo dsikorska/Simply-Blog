@@ -11,15 +11,71 @@ import NewPost from './components/Post/NewPost/NewPost';
 import EditPost from './components/Post/EditPost/EditPost';
 import About from './components/About/About';
 import Settings from './components/Settings/Settings';
+import Axios, { options } from './axios-api';
 
 class App extends React.Component {
+  state = {
+    headerImg: null,
+    headerRef: null,
+    start: true,
+    editMode: false
+  }
+
   componentDidMount() {
     this.props.onTryAutoSignup();
+
+    if (this.state.start) {
+      this.setState({ start: false });
+      this.getHeader();
+    }
+  }
+
+  getHeader() {
+    Axios.get("/api/blog/header")
+      .then(response => {
+        const url = response.data ? Axios.defaults.baseURL + response.data : null;
+        this.setState({ headerImg: url })
+      }).catch(err => {
+        console.log(err);
+      })
+  }
+
+  toggleEditMode = (e) => {
+    e.preventDefault();
+    this.setState({ editMode: !this.state.editMode });
+  }
+
+  updateHeaderHandler = (e) => {
+    e.preventDefault();
+
+    if (!window.confirm("Are you sure?")) {
+      return;
+    }
+
+    let image = new FormData();
+    image.append("image", this.state.headerRef.current.files[0]);
+
+    Axios.post('/api/admin/header/', image, options(this.props.token))
+      .then(response => {
+        this.getHeader();
+      }).catch(err => {
+        console.log(err);
+      })
+  }
+
+  handleRef = (ref) => {
+    this.setState({ headerRef: ref });
   }
 
   render() {
     return (
-      <Layout>
+      <Layout
+        refHandler={this.handleRef}
+        headerImg={this.state.headerImg}
+        isAuthenticated={this.props.isAuthenticated}
+        editMode={this.state.editMode}
+        toggleEditMode={this.toggleEditMode}
+        updateHeaderHandler={this.updateHeaderHandler}>
         <Switch>
           <Route path='/settings' component={Settings} />
           <Route path='/about' component={About} />
@@ -34,10 +90,17 @@ class App extends React.Component {
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: state.auth.token !== null,
+    token: state.auth.token
+  };
+}
+
 const mapDispatchToProps = dispatch => {
   return {
     onTryAutoSignup: () => dispatch(actions.authCheckState())
   }
 }
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

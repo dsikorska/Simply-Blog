@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimplyBlog.Website.Models;
 using SimplyBlog.Website.Models.DTOs;
@@ -61,6 +62,14 @@ namespace SimplyBlog.Website.Controllers
         public async Task<ActionResult> ChangeSecret([FromForm]EditAboutDto model)
         {
             await service.UpdateAbout(model);
+            return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("header")]
+        public async Task<ActionResult> ChangeHeader(IFormFile image)
+        {
+            await service.UpdateHeader(image);
             return Ok();
         }
     }
