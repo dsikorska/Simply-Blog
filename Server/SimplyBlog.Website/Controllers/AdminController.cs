@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SimplyBlog.Website.Models;
 using SimplyBlog.Website.Models.DTOs;
-using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Website.Controllers
 {
@@ -15,16 +15,18 @@ namespace SimplyBlog.Website.Controllers
     public class AdminController : ControllerBase
     {
         private readonly AppService service;
+        private readonly ILogger<AdminController> logger;
 
-        public AdminController(AppService service)
+        public AdminController(AppService service, ILogger<AdminController> logger)
         {
             this.service = service;
+            this.logger = logger;
         }
         //todo images manager
         [HttpPost("auth")]
         public ActionResult Authenticate(LoginModel model)
         {
-            LoginResponse response = service.Authenticate(model.Username, model.Password);
+            LoginResponseDto response = service.Authenticate(model.Username, model.Password);
 
             if (response.Error != null)
             {
@@ -36,7 +38,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("credential")]
-        public ActionResult ChangePassword(CredentialDto model)
+        public ActionResult ChangePassword(CredentialRequestDto model)
         {
             service.UpdateCredential(model);
             return Ok();
@@ -44,7 +46,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("about")]
-        public async Task<ActionResult> UpdateAbout([FromForm]EditAboutDto model)
+        public async Task<ActionResult> UpdateAbout([FromForm]AboutRequestDto model)
         {
             await service.UpdateAbout(model);
             return Ok();

@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
@@ -23,13 +24,15 @@ namespace SimplyBlog.Website.Controllers
         private readonly IMapper mapper;
         private readonly IWritableOptions<AboutWritableOption> about;
         private readonly IWritableOptions<HeaderWritableOption> header;
+        private readonly ILogger<BlogController> logger;
 
-        public BlogController(IBlogRepository repository, IMapper map, IWritableOptions<AboutWritableOption> about, IWritableOptions<HeaderWritableOption> header)
+        public BlogController(IBlogRepository repository, IMapper map, IWritableOptions<AboutWritableOption> about, IWritableOptions<HeaderWritableOption> header, ILogger<BlogController> logger)
         {
             blogRepository = repository;
             mapper = map;
             this.about = about;
             this.header = header;
+            this.logger = logger;
         }
 
         [HttpGet("header")]
@@ -39,9 +42,9 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [HttpGet("about")]
-        public ActionResult<ReadAboutDto> GetAbout()
+        public ActionResult<AboutResponseDto> GetAbout()
         {
-            return new ReadAboutDto
+            return new AboutResponseDto
             {
                 About = about.Value.About,
                 ImageUri = ImageHandler.GetImageUri(GetHostPath(), about.Value.ImageId)
@@ -53,16 +56,16 @@ namespace SimplyBlog.Website.Controllers
         {
             category = category == "null" ? null : category;
             IEnumerable<Post> posts = blogRepository.GetPosts(page, category);
-            List<ReadShortPostDto> mappedPosts = posts.Select(x =>
+            List<ShortPostResponseDto> mappedPosts = posts.Select(x =>
             {
-                ReadShortPostDto mappedPost = (ReadShortPostDto)x;
+                ShortPostResponseDto mappedPost = (ShortPostResponseDto)x;
                 mappedPost.ImageUri = ImageHandler.GetImageUri(GetHostPath(), x.ImageGuid);
                 return mappedPost;
             }).ToList();
 
             int maxPages = blogRepository.GetMaxPages(category);
 
-            ListResponse<ReadShortPostDto> result = new ListResponse<ReadShortPostDto>()
+            ListResponse<ShortPostResponseDto> result = new ListResponse<ShortPostResponseDto>()
             {
                 CurrentPage = page,
                 MaxPages = maxPages,
@@ -86,13 +89,13 @@ namespace SimplyBlog.Website.Controllers
             {
                 if (shortPost)
                 {
-                    ReadShortPostDto result = (ReadShortPostDto)post;
+                    ShortPostResponseDto result = (ShortPostResponseDto)post;
                     result.ImageUri = ImageHandler.GetImageUri(GetHostPath(), post.ImageGuid);
                     return Ok(result);
                 }
                 else
                 {
-                    ReadPostDto result = (ReadPostDto)post;
+                    PostResponseDto result = (PostResponseDto)post;
                     result.ImageUri = ImageHandler.GetImageUri(GetHostPath(), post.ImageGuid);
                     return Ok(result);
                 }
@@ -109,7 +112,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("new")]
-        public async Task<ActionResult> CreatePost([FromForm]NewPostDto post)
+        public async Task<ActionResult> CreatePost([FromForm]PostNewRequestDto post)
         {
             if (!ModelState.IsValid)
             {
@@ -126,7 +129,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPatch("{id}")]
-        public async Task<ActionResult> EditPost([FromForm]EditPostDto post)
+        public async Task<ActionResult> EditPost([FromForm]PostEditRequestDto post)
         {
             if (!ModelState.IsValid)
             {

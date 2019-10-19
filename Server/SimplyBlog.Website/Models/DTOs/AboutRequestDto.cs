@@ -2,7 +2,7 @@
 
 namespace SimplyBlog.Website.Models.DTOs
 {
-    public class EditAboutDto
+    public class AboutRequestDto
     {
         public string About { get; set; }
         public IFormFile Image { get; set; }

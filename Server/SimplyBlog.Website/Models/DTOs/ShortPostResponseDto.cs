@@ -4,7 +4,7 @@ using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Website.Models.DTOs
 {
-    public class ReadShortPostDto
+    public class ShortPostResponseDto : Response.Response
     {
         public long Id { get; set; }
 
@@ -18,9 +18,9 @@ namespace SimplyBlog.Website.Models.DTOs
         public DateTime LastModified { get; set; } = DateTime.UtcNow;
         public List<string> Categories { get; set; } = new List<string>();
 
-        public static explicit operator ReadShortPostDto(Post post)
+        public static explicit operator ShortPostResponseDto(Post post)
         {
-            ReadShortPostDto result = new ReadShortPostDto()
+            ShortPostResponseDto result = new ShortPostResponseDto()
             {
                 Categories = post.Categories,
                 Content = post.Content,

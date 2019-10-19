@@ -57,7 +57,7 @@ namespace SimplyBlog.Tests
         {
             blogController.ModelState.AddModelError("", "");
 
-            ActionResult result = await blogController.CreatePost(new Website.Models.DTOs.NewPostDto());
+            ActionResult result = await blogController.CreatePost(new Website.Models.DTOs.PostNewRequestDto());
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.IsNotNull((result as BadRequestObjectResult).Value);
@@ -67,7 +67,7 @@ namespace SimplyBlog.Tests
         public async Task CreatePost_ValidModel_ReturnsOk()
         {
             ActionResult result = await blogController.CreatePost(
-                new Website.Models.DTOs.NewPostDto
+                new Website.Models.DTOs.PostNewRequestDto
                 {
                     Categories = new List<string> { "test" },
                     Content = "test",
@@ -82,7 +82,7 @@ namespace SimplyBlog.Tests
         public async Task EditPost_ValidModel_ReturnsOk()
         {
             ActionResult result = await blogController.EditPost(
-                new Website.Models.DTOs.EditPostDto
+                new Website.Models.DTOs.PostEditRequestDto
                 {
                     Title = "test",
                     Image = null,
@@ -99,7 +99,7 @@ namespace SimplyBlog.Tests
         {
             blogController.ModelState.AddModelError("", "");
 
-            ActionResult result = await blogController.EditPost(new Website.Models.DTOs.EditPostDto());
+            ActionResult result = await blogController.EditPost(new Website.Models.DTOs.PostEditRequestDto());
 
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
             Assert.IsNotNull((result as BadRequestObjectResult).Value);

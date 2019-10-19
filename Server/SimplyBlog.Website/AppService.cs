@@ -3,13 +3,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Website.Configuration;
 using SimplyBlog.Website.Models.DTOs;
-using SimplyBlog.Website.Models.Response;
 
 namespace SimplyBlog.Website
 {
@@ -26,23 +26,23 @@ namespace SimplyBlog.Website
             this.writableHeader = writableHeader;
         }
 
-        public LoginResponse Authenticate(string username, string password)
+        public LoginResponseDto Authenticate(string username, string password)
         {
             if (!ValidateUser(username, password))
             {
-                return new LoginResponse()
+                return new LoginResponseDto()
                 {
                     Error = "Invalid Username or Password."
                 };
             }
 
             byte[] key = Encoding.ASCII.GetBytes(writableCredential.Value.Secret);
-            LoginResponse response = GetSecurityToken(key, username);
+            LoginResponseDto response = GetSecurityToken(key, username);
 
             return response;
         }
 
-        private LoginResponse GetSecurityToken(byte[] key, string username)
+        private LoginResponseDto GetSecurityToken(byte[] key, string username)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
@@ -58,7 +58,7 @@ namespace SimplyBlog.Website
             };
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            LoginResponse response = new LoginResponse()
+            LoginResponseDto response = new LoginResponseDto()
             {
                 Token = tokenHandler.WriteToken(token),
                 ExpirationDate = expDate
@@ -112,7 +112,7 @@ namespace SimplyBlog.Website
             return Convert.ToBase64String(hashBytes);
         }
 
-        public void UpdateCredential(CredentialDto credential)
+        public void UpdateCredential(CredentialRequestDto credential)
         {
             string login, password, secret = null;
             if (!string.IsNullOrWhiteSpace(credential.Login))
@@ -155,13 +155,13 @@ namespace SimplyBlog.Website
             });
         }
 
-        public async Task UpdateAbout(EditAboutDto model)
+        public async Task UpdateAbout(AboutRequestDto model, CancellationToken cancellationtoken = default(CancellationToken))
         {
             Guid? imageId = writableAbout.Value.ImageId;
 
             if (!model.UseExistingImage)
             {
-                imageId = await ImageHandler.SaveImageToFile(model.Image);
+                imageId = await ImageHandler.SaveImageToFile(model.Image, cancellationtoken);
             }
 
             writableAbout.Update(opt =>
@@ -171,18 +171,18 @@ namespace SimplyBlog.Website
             });
         }
 
-        public async Task UpdateHeader(IFormFile image)
+        public async Task UpdateHeader(IFormFile image, CancellationToken cancellationtoken = default(CancellationToken))
         {
-            Guid? imageId = await ImageHandler.SaveImageToFile(image);
+            Guid? imageId = await ImageHandler.SaveImageToFile(image, cancellationtoken);
             writableHeader.Update(opt =>
             {
                 opt.ImageId = imageId;
             });
         }
 
-        public async Task<string> UploadImage(string hostPath, IFormFile image)
+        public async Task<string> UploadImage(string hostPath, IFormFile image, CancellationToken cancellationtoken = default(CancellationToken))
         {
-            Guid? id = await ImageHandler.SaveImageToFile(image);
+            Guid? id = await ImageHandler.SaveImageToFile(image, cancellationtoken);
             return ImageHandler.GetImageUri(hostPath, id);
         }
     }

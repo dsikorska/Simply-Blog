@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
@@ -9,8 +10,8 @@ namespace SimplyBlog.Core.Concrete
     {
         public static string BasePath { get { return Path.Combine(Environment.CurrentDirectory, @"Data"); } }
         public static string PublicPath { get { return @"/static"; } }
-
-        public static async Task<Guid?> SaveImageToFile(IFormFile image)
+        //todo remove ref to aspnetcore
+        public static async Task<Guid?> SaveImageToFile(IFormFile image, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (image?.Length > 0)
             {
@@ -19,7 +20,7 @@ namespace SimplyBlog.Core.Concrete
                 string filePath = Path.Combine(destination.FullName, fileName.ToString());
                 using (FileStream stream = new FileStream(filePath.ToString() + ".jpeg", FileMode.Create))
                 {
-                    await image.CopyToAsync(stream);
+                    await image.CopyToAsync(stream, cancellationToken);
                     return fileName;
                 }
             }
