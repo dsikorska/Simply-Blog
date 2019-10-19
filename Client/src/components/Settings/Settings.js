@@ -8,48 +8,52 @@ import Axios, { options } from '../../axios-api';
 
 class Settings extends React.Component {
     state = {
-        login: {
-            name: 'login',
-            elementType: 'input',
-            elementConfig: {
-                type: 'input',
-                placeholder: 'Enter new login'
+        controls: {
+            login: {
+                name: 'login',
+                elementType: 'input',
+                elementConfig: {
+                    type: 'input',
+                    placeholder: 'Enter new login'
+                },
+                value: '',
+                validation: {
+                    minLength: 6
+                },
+                valid: true,
+                touched: false
             },
-            value: '',
-            validation: {
-                minLength: 6
+            password: {
+                name: 'password',
+                elementType: 'input',
+                elementConfig: {
+                    type: 'password',
+                    placeholder: 'Enter new password'
+                },
+                value: '',
+                validation: {
+                    minLength: 6
+                },
+                valid: true,
+                touched: false
             },
-            valid: false,
-            touched: false
+            token: {
+                name: 'token',
+                elementType: 'input',
+                elementConfig: {
+                    type: 'input',
+                    placeholder: 'Enter new secret text (used for authorization)'
+                },
+                value: '',
+                validation: {
+                    minLength: 64
+                },
+                valid: true,
+                touched: false
+            }
         },
-        password: {
-            name: 'password',
-            elementType: 'input',
-            elementConfig: {
-                type: 'password',
-                placeholder: 'Enter new password'
-            },
-            value: '',
-            validation: {
-                minLength: 6
-            },
-            valid: false,
-            touched: false
-        },
-        token: {
-            name: 'token',
-            elementType: 'input',
-            elementConfig: {
-                type: 'input',
-                placeholder: 'Enter new secret text (used for authorization)'
-            },
-            value: '',
-            validation: {
-                minLength: 64
-            },
-            valid: false,
-            touched: false
-        }
+        formIsValid: false,
+        loading: false,
     }
 
     componentDidMount() {
@@ -76,21 +80,42 @@ class Settings extends React.Component {
         return isValid;
     }
 
-    inputChangedHandler = (event, control) => {
-        const updatedControl = {
-            ...control,
-            value: event.target.value,
-            valid: this.checkValidity(event.target.value, control.validation),
-            touched: true
+    inputChangedHandler = (event, inputId) => {
+        const updatedForm = { ...this.state.controls };
+        const updatedFormElement = { ...updatedForm[inputId] };
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.touched = true;
+        updatedForm[inputId] = updatedFormElement;
+
+        let formIsValid = true;
+        for (let inputId in updatedForm) {
+            formIsValid = updatedForm[inputId].valid && formIsValid;
         }
 
-        this.setState({ [control.name]: updatedControl });
+        this.setState({ controls: updatedForm, formIsValid: formIsValid });
     }
 
-    loginSubmitHandler = (e) => {
+    clearForm = () => {
+        let controls = { ...this.state.controls };
+
+        for (let key in this.state.controls) {
+            controls = {
+                ...controls,
+                [key]: {
+                    ...this.state.controls[key],
+                    value: ''
+                }
+            }
+        }
+
+        this.setState({ controls: controls });
+    }
+
+    formSubmitHandler = (e) => {
         e.preventDefault();
 
-        if (!this.state.login.valid) {
+        if (!this.state.formIsValid) {
             return;
         }
 
@@ -98,103 +123,48 @@ class Settings extends React.Component {
             return;
         }
 
-        Axios.post('/api/admin/changeLogin/' + this.state.login.value, null, options(this.props.token))
+        const credential = {
+            login: this.state.controls.login.value,
+            password: this.state.controls.password.value,
+            secret: this.state.controls.token.value
+        }
+
+        Axios.post('/api/admin/credential', credential, options(this.props.token))
             .then(response => {
-                this.setState({ login: { ...this.state.login, value: '' } });
-            }).catch(err => {
-                console.log(err);
-            })
-    }
-
-    passwordSubmitHandler = (e) => {
-        e.preventDefault();
-
-        if (!this.state.password.valid) {
-            return;
-        }
-
-        if (!window.confirm("Are you sure?")) {
-            return;
-        }
-
-        Axios.post('/api/admin/changePassword/' + this.state.password.value, null, options(this.props.token))
-            .then(response => {
-                this.setState({ password: { ...this.state.password, value: '' } });
-            }).catch(err => {
-                console.log(err);
-            })
-    }
-
-    tokenSubmitHandler = (e) => {
-        e.preventDefault();
-
-        if (!this.state.token.valid) {
-            return;
-        }
-
-        if (!window.confirm("Are you sure?")) {
-            return;
-        }
-
-        Axios.post('/api/admin/changeSecret/' + this.state.token.value, null, options(this.props.token))
-            .then(response => {
-                this.setState({ token: { ...this.state.token, value: '' } });
+                this.clearForm();
             }).catch(err => {
                 console.log(err);
             })
     }
 
     render() {
+        const formElements = [];
+        for (let key in this.state.controls) {
+            formElements.push({
+                id: key,
+                config: this.state.controls[key]
+            });
+        }
+
         return (
             <div>
-                <form onSubmit={this.loginSubmitHandler}>
-                    <Input
-                        key={this.state.login.elementConfig.placeholder}
-                        elementType={this.state.login.elementType}
-                        elementConfig={this.state.login.elementConfig}
-                        value={this.state.login.value}
-                        changed={(event) => this.inputChangedHandler(event, this.state.login)}
-                        shouldValidate={this.state.login.validation}
-                        invalid={!this.state.login.valid}
-                        touched={this.state.login.touched} />
+                <form onSubmit={this.formSubmitHandler}>
+                    {formElements.map(element => (
+                        <Input
+                            key={element.id}
+                            elementType={element.config.elementType}
+                            elementConfig={element.config.elementConfig}
+                            value={element.config.value}
+                            changed={(event) => this.inputChangedHandler(event, element.id)}
+                            shouldValidate={element.config.validation}
+                            invalid={!element.config.valid}
+                            touched={element.config.touched}
+                            className={element.config.className} />
+                    ))}
                     <div className="Button">
-                        <Button btnType="Danger">
+                        <Button btnType="Success">
                             <span><FontAwesomeIcon icon={faSave} /></span>
-                            Change login
-                        </Button>
-                    </div>
-                </form>
-                <form onSubmit={this.passwordSubmitHandler}>
-                    <Input
-                        key={this.state.password.elementConfig.placeholder}
-                        elementType={this.state.password.elementType}
-                        elementConfig={this.state.password.elementConfig}
-                        value={this.state.password.value}
-                        changed={(event) => this.inputChangedHandler(event, this.state.password)}
-                        shouldValidate={this.state.password.validation}
-                        invalid={!this.state.password.valid}
-                        touched={this.state.password.touched} />
-                    <div className="Button">
-                        <Button btnType="Danger">
-                            <span><FontAwesomeIcon icon={faSave} /></span>
-                            Change password
-                        </Button>
-                    </div>
-                </form>
-                <form onSubmit={this.tokenSubmitHandler}>
-                    <Input
-                        key={this.state.token.elementConfig.placeholder}
-                        elementType={this.state.token.elementType}
-                        elementConfig={this.state.token.elementConfig}
-                        value={this.state.token.value}
-                        changed={(event) => this.inputChangedHandler(event, this.state.token)}
-                        shouldValidate={this.state.token.validation}
-                        invalid={!this.state.token.valid}
-                        touched={this.state.token.touched} />
-                    <div className="Button">
-                        <Button btnType="Danger">
-                            <span><FontAwesomeIcon icon={faSave} /></span>
-                            Change secret
+                            Save
                         </Button>
                     </div>
                 </form>

@@ -15,15 +15,13 @@ namespace SimplyBlog.Website
 {
     public class AppService
     {
-        private readonly IWritableOptions<Credentials> writableCredentials;
-        private readonly IWritableOptions<Secret> writableSecret;
+        private readonly IWritableOptions<CredentialWritableOption> writableCredential;
         private readonly IWritableOptions<AboutWritableOption> writableAbout;
         private readonly IWritableOptions<HeaderWritableOption> writableHeader;
 
-        public AppService(IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret, IWritableOptions<AboutWritableOption> writableAbout, IWritableOptions<HeaderWritableOption> writableHeader)
+        public AppService(IWritableOptions<CredentialWritableOption> writableCredentials, IWritableOptions<AboutWritableOption> writableAbout, IWritableOptions<HeaderWritableOption> writableHeader)
         {
-            this.writableCredentials = writableCredentials;
-            this.writableSecret = writableSecret;
+            this.writableCredential = writableCredentials;
             this.writableAbout = writableAbout;
             this.writableHeader = writableHeader;
         }
@@ -38,7 +36,7 @@ namespace SimplyBlog.Website
                 };
             }
 
-            byte[] key = Encoding.ASCII.GetBytes(writableSecret.Value.Value);
+            byte[] key = Encoding.ASCII.GetBytes(writableCredential.Value.Secret);
             LoginResponse response = GetSecurityToken(key, username);
 
             return response;
@@ -71,8 +69,8 @@ namespace SimplyBlog.Website
 
         public bool ValidateUser(string username, string password)
         {
-            string login = writableCredentials.Value.Login;
-            string hashPassword = writableCredentials.Value.Password;
+            string login = writableCredential.Value.Login;
+            string hashPassword = writableCredential.Value.Password;
 
             bool validPassword = VerifyPassword(hashPassword, password);
 
@@ -100,16 +98,6 @@ namespace SimplyBlog.Website
             return valid;
         }
 
-        public void ChangePassword(string newPassword)
-        {
-            string newHashedPassword = HashPassword(newPassword);
-
-            writableCredentials.Update(opt =>
-            {
-                opt.Password = newHashedPassword;
-            });
-        }
-
         //Ref: https://medium.com/@mehanix/lets-talk-security-salted-password-hashing-in-c-5460be5c3aae
         private static string HashPassword(string password)
         {
@@ -124,24 +112,46 @@ namespace SimplyBlog.Website
             return Convert.ToBase64String(hashBytes);
         }
 
-        public void ChangeLogin(string newLogin)
+        public void UpdateCredential(CredentialDto credential)
         {
-            writableCredentials.Update(opt =>
+            string login, password, secret = null;
+            if (!string.IsNullOrWhiteSpace(credential.Login))
             {
-                opt.Login = newLogin;
-            });
-        }
-
-        public void ChangeSecret(string newSecret)
-        {
-            if (newSecret.Length < 64)
+                login = credential.Login;
+            }
+            else
             {
-                throw new ArgumentException("New secret must be at least 64 characters long.");
+                login = writableCredential.Value.Login;
             }
 
-            writableSecret.Update(opt =>
+            if (!string.IsNullOrWhiteSpace(credential.Password))
             {
-                opt.Value = newSecret;
+                password = HashPassword(credential.Password);
+            }
+            else
+            {
+                password = writableCredential.Value.Password;
+            }
+
+            if (!string.IsNullOrWhiteSpace(credential.Secret))
+            {
+                if (credential.Secret?.Length < 64)
+                {
+                    throw new ArgumentException("New secret must be at least 64 characters long.");
+                }
+
+                secret = credential.Secret;
+            }
+            else
+            {
+                secret = writableCredential.Value.Secret;
+            }
+
+            writableCredential.Update(opt =>
+            {
+                opt.Password = password;
+                opt.Login = login;
+                opt.Secret = secret;
             });
         }
 

@@ -20,7 +20,7 @@ namespace SimplyBlog.Website.Controllers
         {
             this.service = service;
         }
-
+        //todo images manager
         [HttpPost("auth")]
         public ActionResult Authenticate(LoginModel model)
         {
@@ -35,32 +35,16 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("changePassword/{value}")]
-        public ActionResult ChangePassword(string value)
+        [HttpPost("credential")]
+        public ActionResult ChangePassword(CredentialDto model)
         {
-            service.ChangePassword(value);
-            return Ok();
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("changeLogin/{value}")]
-        public ActionResult ChangeLogin(string value)
-        {
-            service.ChangeLogin(value);
-            return Ok();
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("changeSecret/{value}")]
-        public ActionResult ChangeSecret(string value)
-        {
-            service.ChangeSecret(value);
+            service.UpdateCredential(model);
             return Ok();
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("about")]
-        public async Task<ActionResult> ChangeSecret([FromForm]EditAboutDto model)
+        public async Task<ActionResult> UpdateAbout([FromForm]EditAboutDto model)
         {
             await service.UpdateAbout(model);
             return Ok();
@@ -68,7 +52,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("header")]
-        public async Task<ActionResult> ChangeHeader(IFormFile image)
+        public async Task<ActionResult> UpdateHeader(IFormFile image)
         {
             await service.UpdateHeader(image);
             return Ok();

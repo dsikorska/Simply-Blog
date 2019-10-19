@@ -32,8 +32,7 @@ namespace SimplyBlog.Website
             services.AddHttpContextAccessor();
 
             // Ref: https://forums.asp.net/t/2148624.aspx?can+we+update+appsettings+json+in+controller+
-            services.ConfigureWritable<Credentials>(Configuration.GetSection("credentials"));
-            services.ConfigureWritable<Secret>(Configuration.GetSection("secret"));
+            services.ConfigureWritable<CredentialWritableOption>(Configuration.GetSection("credentials"));
             services.ConfigureWritable<AboutWritableOption>(Configuration.GetSection("about"));
             services.ConfigureWritable<HeaderWritableOption>(Configuration.GetSection("header"));
 
@@ -55,7 +54,7 @@ namespace SimplyBlog.Website
 
             // Ref: https://jasonwatmore.com/post/2018/08/14/aspnet-core-21-jwt-authentication-tutorial-with-example-api
             // Ref: https://www.blinkingcaret.com/2017/09/06/secure-web-api-in-asp-net-core/
-            byte[] key = Encoding.ASCII.GetBytes(Configuration.GetSection("secret")["value"].ToString());
+            byte[] key = Encoding.ASCII.GetBytes(Configuration.GetSection("credentials")["secret"].ToString());
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
