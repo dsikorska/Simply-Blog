@@ -51,7 +51,7 @@ class Post extends Component {
                         <p style={{ margin: "auto" }}>{tags}</p>
                     </div>
                     <div className="Container">
-                        {this.state.post.imageUri ? <img src={Axios.defaults.baseURL + this.state.post.imageUri} alt="" /> : null}
+                        {this.state.post.imageUri ? <img src={this.state.post.imageUri} alt="" /> : null}
                         <div className="Content">
                             <RichTextbox editorState={this.state.content} readOnly={true} />
                         </div>

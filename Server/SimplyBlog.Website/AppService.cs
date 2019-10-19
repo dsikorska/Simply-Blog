@@ -169,5 +169,11 @@ namespace SimplyBlog.Website
                 opt.ImageId = imageId;
             });
         }
+
+        public async Task<string> UploadImage(string hostPath, IFormFile image)
+        {
+            Guid? id = await ImageHandler.SaveImageToFile(image);
+            return ImageHandler.GetImageUri(hostPath, id);
+        }
     }
 }

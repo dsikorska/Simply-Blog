@@ -168,7 +168,7 @@ class EditPost extends React.Component {
                             </div>
                             {this.state.image ?
                                 <div className="Img">
-                                    <img src={Axios.defaults.baseURL + this.state.image} alt={this.state.form.title.value} />
+                                    <img src={this.state.image} alt={this.state.form.title.value} />
                                 </div> : null}
                         </div>
                         {formElements.map(element => (

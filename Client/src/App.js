@@ -17,6 +17,8 @@ class App extends React.Component {
   state = {
     headerImg: null,
     headerRef: null,
+    uploadImageRef: null,
+    imageUrl: null,
     start: true,
     editMode: false
   }
@@ -33,7 +35,7 @@ class App extends React.Component {
   getHeader() {
     Axios.get("/api/blog/header")
       .then(response => {
-        const url = response.data ? Axios.defaults.baseURL + response.data : null;
+        const url = response.data ? response.data : null;
         this.setState({ headerImg: url })
       }).catch(err => {
         console.log(err);
@@ -67,15 +69,32 @@ class App extends React.Component {
     this.setState({ headerRef: ref });
   }
 
+  uploadImageHandler = (e) => {
+    e.preventDefault();
+
+    let image = new FormData();
+    image.append("image", this.state.uploadImageRef.current.files[0]);
+
+    Axios.post('/api/admin/upload/', image, options(this.props.token))
+      .then(response => {
+        this.setState({ imageUrl: response.data });
+      }).catch(err => {
+        console.log(err);
+      })
+  }
+
   render() {
     return (
       <Layout
-        refHandler={this.handleRef}
+        headerRefHandler={(ref) => this.setState({ headerRef: ref })}
+        uploadImageRefHandler={(ref) => this.setState({ uploadImageRef: ref })}
+        imageUrl={this.state.imageUrl}
         headerImg={this.state.headerImg}
         isAuthenticated={this.props.isAuthenticated}
         editMode={this.state.editMode}
         toggleEditMode={this.toggleEditMode}
-        updateHeaderHandler={this.updateHeaderHandler}>
+        updateHeaderHandler={this.updateHeaderHandler}
+        uploadImageHandler={this.uploadImageHandler}>
         <Switch>
           <Route path='/settings' component={Settings} />
           <Route path='/about' component={About} />

@@ -4,13 +4,16 @@ import styles from './Layout.module.css';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCog, faCogs, faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faUserCog, faCogs, faEdit, faSave, faUpload } from '@fortawesome/free-solid-svg-icons';
 import Button from './../UI/Button/Button';
+import Panel from '../UI/Panel/Panel';
 
 const Layout = (props) => {
-    const ref = useRef(null);
+    const headerRef = useRef(null);
+    const uploadImageRef = useRef(null);
     useEffect(() => {
-        props.refHandler(ref);
+        props.headerRefHandler(headerRef);
+        props.uploadImageRefHandler(uploadImageRef);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -26,7 +29,7 @@ const Layout = (props) => {
             {props.editMode ?
                 <form onSubmit={props.updateHeaderHandler}>
                     <div style={{ padding: "0.375rem 0.75rem" }}>
-                        <input type="file" name="image" ref={ref} accept="image/*" className="Input" />
+                        <input type="file" name="image" ref={headerRef} accept="image/*" className="Input" />
                     </div>
                     <div className="Button">
                         <Button btnType="Danger">
@@ -43,6 +46,22 @@ const Layout = (props) => {
                         Edit
                     </Button>
                 </div>
+                : null}
+            {props.isAuthenticated ?
+                <Panel.body>
+                    <form onSubmit={props.uploadImageHandler}>
+                        <div style={{ padding: "0.375rem 0.75rem" }}>
+                            <input type="file" name="uploadImage" ref={uploadImageRef} accept="image/*" className="Input" />
+                        </div>
+                        <div className="Button">
+                            <Button btnType="Success">
+                                <span><FontAwesomeIcon icon={faUpload} /></span>
+                                Get image URL
+                        </Button>
+                        </div>
+                    </form>
+                    <input className="Input" disabled value={props.imageUrl} />
+                </Panel.body>
                 : null}
             <nav className={styles.Nav}>
                 <div className={styles.NavContent}>

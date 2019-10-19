@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Website.Models.DTOs
@@ -30,8 +29,6 @@ namespace SimplyBlog.Website.Models.DTOs
                 LastModified = post.LastModified,
                 Title = post.Title
             };
-
-            result.ImageUri = ImageHandler.GetImageUri(post.ImageGuid);
 
             return result;
         }

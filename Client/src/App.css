@@ -11,13 +11,6 @@ body {
   margin: auto;
 }
 
-/* Fake image */
-.fakeimg {
-  background-color: #aaa;
-  width: 100%;
-  padding: 20px;
-}
-
 form {
   width: 100%;
 }
@@ -61,6 +54,11 @@ form {
 .Button {
   text-align: right;
   height: auto;
+}
+
+.ButtonsGroup{
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .Container {

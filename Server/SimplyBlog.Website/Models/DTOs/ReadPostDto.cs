@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Website.Models.DTOs
@@ -20,8 +19,6 @@ namespace SimplyBlog.Website.Models.DTOs
                 Title = post.Title,
                 Comments = post.Comments
             };
-
-            result.ImageUri = ImageHandler.GetImageUri(post.ImageGuid);
 
             return result;
         }

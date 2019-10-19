@@ -29,6 +29,8 @@ namespace SimplyBlog.Website
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+
             // Ref: https://forums.asp.net/t/2148624.aspx?can+we+update+appsettings+json+in+controller+
             services.ConfigureWritable<Credentials>(Configuration.GetSection("credentials"));
             services.ConfigureWritable<Secret>(Configuration.GetSection("secret"));

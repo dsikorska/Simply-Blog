@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -71,6 +72,19 @@ namespace SimplyBlog.Website.Controllers
         {
             await service.UpdateHeader(image);
             return Ok();
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("upload")]
+        public async Task<ActionResult> UploadImage(IFormFile image)
+        {
+            string url = await service.UploadImage(GetHostPath(), image);
+            return Ok(url);
+        }
+
+        private string GetHostPath()
+        {
+            return new Uri(string.Concat(HttpContext.Request.Scheme, "://", HttpContext.Request.Host.Value)).ToString();
         }
     }
 }

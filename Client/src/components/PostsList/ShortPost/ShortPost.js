@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom'
-import Axios from '../../../axios-api';
 import Panel from './../../UI/Panel/Panel';
 import Button from './../../UI/Button/Button';
 import { faEdit, faMinus, faCalendar, faTag } from '@fortawesome/free-solid-svg-icons';
@@ -9,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const shortPost = (props) => {
     const tags = props.tags.map(tag => {
         return (
-            <li key={tag}>
+            <li key={`p${tag}`}>
                 <button onClick={() => props.tagClicked(tag)}>
                     <span><FontAwesomeIcon icon={faTag} size="xs" /></span>
                     {tag}</button>
@@ -46,7 +45,7 @@ const shortPost = (props) => {
                 <Panel.body>
                     {props.image ?
                         <Panel.body.img>
-                            <img src={Axios.defaults.baseURL + props.image} alt="" />
+                            <img src={props.image} alt="" />
                         </Panel.body.img>
                         : null}
                     <p>{props.content.substring(0, 200)}...</p>

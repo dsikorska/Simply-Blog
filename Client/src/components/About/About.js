@@ -81,7 +81,7 @@ class About extends React.Component {
                                 </div>
                                 {this.state.image ?
                                     <div className="Img">
-                                        <img src={Axios.defaults.baseURL + this.state.image} alt="" />
+                                        <img src={this.state.image} alt="" />
                                     </div> : null}
                             </div>
                             <RichTextbox
@@ -98,7 +98,7 @@ class About extends React.Component {
                         :
                         <Auxiliary>
                             <div className={styles.Details}>
-                                <img src={Axios.defaults.baseURL + this.state.image} alt="" />
+                                <img src={this.state.image} alt="" />
                                 <div style={{ width: "70%" }}>
                                     <RichTextbox
                                         onEditorChange={this.onEditorChange}

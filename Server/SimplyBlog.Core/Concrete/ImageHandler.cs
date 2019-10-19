@@ -26,14 +26,19 @@ namespace SimplyBlog.Core.Concrete
             return null;
         }
 
-        public static string GetImageUri(Guid? id)
+        public static string GetImageUri(string hostPath, Guid? id)
         {
             if (!id.HasValue)
             {
                 return null;
             }
 
-            return Path.Combine(PublicPath, "images", id.ToString() + ".jpeg");
+            return new Uri((string.Concat(hostPath.ToString(), PublicPath.TrimStart('/'), "/images/", id.ToString() + ".jpeg"))).ToString();
+        }
+
+        public static void DeleteImage(Guid id)
+        {
+            File.Delete(Path.Combine(BasePath, "images", id.ToString() + ".jpeg"));
         }
     }
 }

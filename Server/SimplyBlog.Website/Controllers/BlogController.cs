@@ -35,7 +35,7 @@ namespace SimplyBlog.Website.Controllers
         [HttpGet("header")]
         public ActionResult<string> GetHeader()
         {
-            return ImageHandler.GetImageUri(header.Value.ImageId);
+            return ImageHandler.GetImageUri(GetHostPath(), header.Value.ImageId);
         }
 
         [HttpGet("about")]
@@ -44,7 +44,7 @@ namespace SimplyBlog.Website.Controllers
             return new ReadAboutDto
             {
                 About = about.Value.About,
-                ImageUri = ImageHandler.GetImageUri(about.Value.ImageId)
+                ImageUri = ImageHandler.GetImageUri(GetHostPath(), about.Value.ImageId)
             };
         }
 
@@ -53,7 +53,12 @@ namespace SimplyBlog.Website.Controllers
         {
             category = category == "null" ? null : category;
             IEnumerable<Post> posts = blogRepository.GetPosts(page, category);
-            List<ReadShortPostDto> mappedPosts = posts.Select(x => (ReadShortPostDto)x).ToList();
+            List<ReadShortPostDto> mappedPosts = posts.Select(x =>
+            {
+                ReadShortPostDto mappedPost = (ReadShortPostDto)x;
+                mappedPost.ImageUri = ImageHandler.GetImageUri(GetHostPath(), x.ImageGuid);
+                return mappedPost;
+            }).ToList();
 
             int maxPages = blogRepository.GetMaxPages(category);
 
@@ -81,11 +86,15 @@ namespace SimplyBlog.Website.Controllers
             {
                 if (shortPost)
                 {
-                    return Ok((ReadShortPostDto)post);
+                    ReadShortPostDto result = (ReadShortPostDto)post;
+                    result.ImageUri = ImageHandler.GetImageUri(GetHostPath(), post.ImageGuid);
+                    return Ok(result);
                 }
                 else
                 {
-                    return Ok((ReadPostDto)post);
+                    ReadPostDto result = (ReadPostDto)post;
+                    result.ImageUri = ImageHandler.GetImageUri(GetHostPath(), post.ImageGuid);
+                    return Ok(result);
                 }
             }
 
@@ -110,6 +119,7 @@ namespace SimplyBlog.Website.Controllers
             Post newPost = mapper.Map<Post>(post);
             newPost.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
             newPost.Categories = newPost.Categories[0]?.Split(',').ToList();
+            newPost.Categories = newPost.Categories.Distinct().ToList();
             blogRepository.Create(newPost);
             return Ok();
         }
@@ -132,6 +142,7 @@ namespace SimplyBlog.Website.Controllers
                     p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
                 }
                 p.Categories = post.Categories[0]?.Split(',').ToList();
+                p.Categories = p.Categories.Distinct().ToList();
                 p.Content = post.Content;
                 p.Title = post.Title;
                 p.LastModified = DateTime.UtcNow;
@@ -152,6 +163,7 @@ namespace SimplyBlog.Website.Controllers
 
             if (post != null)
             {
+                ImageHandler.DeleteImage(post.ImageGuid.Value);
                 blogRepository.Delete(post);
                 return Ok();
             }
@@ -192,6 +204,11 @@ namespace SimplyBlog.Website.Controllers
             }
 
             return NotFound();
+        }
+
+        private string GetHostPath()
+        {
+            return new Uri(string.Concat(HttpContext.Request.Scheme, "://", HttpContext.Request.Host.Value)).ToString();
         }
     }
 }
