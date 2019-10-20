@@ -37,8 +37,13 @@ namespace SimplyBlog.Core.Concrete
             return new Uri((string.Concat(hostPath.ToString(), PublicPath.TrimStart('/'), "/images/", id.ToString() + ".jpeg"))).ToString();
         }
 
-        public static void DeleteImage(Guid id)
+        public static void DeleteImage(Guid? id)
         {
+            if (id == null)
+            {
+                return;
+            }
+
             File.Delete(Path.Combine(BasePath, "images", id.ToString() + ".jpeg"));
         }
     }

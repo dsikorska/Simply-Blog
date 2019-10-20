@@ -2,8 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using SimplyBlog.Website.Configuration;
 
-namespace SimplyBlog.Website.Configuration
+namespace SimplyBlog.Website.Extensions
 {
     public static class ServiceCollectionExtensions
     {

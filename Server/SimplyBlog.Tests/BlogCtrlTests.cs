@@ -22,7 +22,7 @@ namespace SimplyBlog.Tests
             FakeBlogRepository blogRepository = new FakeBlogRepository();
             MapperConfiguration mappingConfig = new MapperConfiguration(config => config.AddProfile(new DtosMappingProfile()));
             IMapper mapper = mappingConfig.CreateMapper();
-            blogController = new BlogController(blogRepository, mapper);
+            blogController = new BlogController(blogRepository, mapper, null, null, null);
         }
 
         [Test]

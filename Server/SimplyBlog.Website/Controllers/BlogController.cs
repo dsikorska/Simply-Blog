@@ -38,17 +38,17 @@ namespace SimplyBlog.Website.Controllers
         [HttpGet("header")]
         public ActionResult<string> GetHeader()
         {
-            return ImageHandler.GetImageUri(GetHostPath(), header.Value.ImageId);
+            return Ok(ImageHandler.GetImageUri(GetHostPath(), header.Value.ImageId));
         }
 
         [HttpGet("about")]
         public ActionResult<AboutResponseDto> GetAbout()
         {
-            return new AboutResponseDto
+            return Ok(new AboutResponseDto
             {
                 About = about.Value.About,
                 ImageUri = ImageHandler.GetImageUri(GetHostPath(), about.Value.ImageId)
-            };
+            });
         }
 
         [HttpGet("posts/{page:int?}/{category}")]
@@ -77,7 +77,7 @@ namespace SimplyBlog.Website.Controllers
         [HttpGet("tags")]
         public ActionResult<List<string>> GetTags()
         {
-            return blogRepository.GetTags().ToList();
+            return Ok(blogRepository.GetTags().ToList());
         }
 
         [HttpGet("{id}")]
@@ -101,13 +101,20 @@ namespace SimplyBlog.Website.Controllers
                 }
             }
 
-            return NotFound();
+            return NotFound(id);
         }
 
         [HttpGet("comments/{id}")]
         public ActionResult<IEnumerable<Comment>> GetAllPostComments(long id)
         {
-            return Ok(blogRepository.GetAllComments(id));
+            Post post = blogRepository.GetById(id);
+
+            if (post == null)
+            {
+                return NotFound(id);
+            }
+
+            return Ok(post.Comments);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -122,7 +129,7 @@ namespace SimplyBlog.Website.Controllers
             Post newPost = mapper.Map<Post>(post);
             newPost.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
             newPost.Categories = newPost.Categories[0]?.Split(',').ToList();
-            newPost.Categories = newPost.Categories.Distinct().ToList();
+            newPost.Categories = newPost.Categories?.Distinct().ToList();
             blogRepository.Create(newPost);
             return Ok();
         }
@@ -145,7 +152,7 @@ namespace SimplyBlog.Website.Controllers
                     p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
                 }
                 p.Categories = post.Categories[0]?.Split(',').ToList();
-                p.Categories = p.Categories.Distinct().ToList();
+                p.Categories = p.Categories?.Distinct().ToList();
                 p.Content = post.Content;
                 p.Title = post.Title;
                 p.LastModified = DateTime.UtcNow;
@@ -155,7 +162,7 @@ namespace SimplyBlog.Website.Controllers
                 return Ok();
             }
 
-            return NotFound();
+            return NotFound(post);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -166,12 +173,12 @@ namespace SimplyBlog.Website.Controllers
 
             if (post != null)
             {
-                ImageHandler.DeleteImage(post.ImageGuid.Value);
+                ImageHandler.DeleteImage(post.ImageGuid);
                 blogRepository.Delete(post);
                 return Ok();
             }
 
-            return NotFound();
+            return NotFound(id);
         }
 
         [HttpPost("{id}/new")]
@@ -190,7 +197,7 @@ namespace SimplyBlog.Website.Controllers
                 return Ok();
             }
 
-            return NotFound();
+            return NotFound(id);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

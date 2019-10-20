@@ -1,10 +1,11 @@
 import React from 'react';
-import Axios, { options } from '../../../axios-api';
-import Spinner from './../../UI/Spinner/Spinner';
-import Comment from './Comment/Comment';
+import { deleteCommentAsync } from '../../../httpClient';
+import Spinner from '../../../components/UI/Spinner/Spinner';
+import Comment from '../../../components/Post/Comments/Comment/Comment';
 import NewComment from './NewComment/NewComment';
 import { connect } from 'react-redux';
-import Panel from '../../UI/Panel/Panel';
+import Panel from '../../../components/UI/Panel/Panel';
+import { getCommentsAsync } from '../../../httpClient';
 
 class Comments extends React.Component {
     state = {
@@ -27,25 +28,18 @@ class Comments extends React.Component {
             return;
         }
 
-        Axios.delete('/api/blog/' + this.props.id + '/' + id, options(this.props.token))
-            .then(response => {
-                const comments = this.state.comments.filter(e => e.id !== id);
-                this.setState({ comments: comments });
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        this.setState({ loading: true });
+        deleteCommentAsync(this.props.id, id, this.props.token).then(data => {
+            const comments = this.state.comments.filter(e => e.id !== id);
+            this.setState({ comments: comments, loading: false });
+        });
     }
 
     loadComments = () => {
         this.setState({ loading: true });
-        Axios.get('/api/blog/comments/' + this.props.id)
-            .then(response => {
-                this.setState({ comments: response.data, loading: false });
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        getCommentsAsync(this.props.id).then(data => {
+            this.setState({ comments: data, loading: false });
+        });
     }
 
     render() {

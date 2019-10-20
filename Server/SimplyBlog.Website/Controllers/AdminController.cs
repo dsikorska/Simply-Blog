@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SimplyBlog.Core.Concrete;
 using SimplyBlog.Website.Models;
 using SimplyBlog.Website.Models.DTOs;
 
@@ -56,8 +57,8 @@ namespace SimplyBlog.Website.Controllers
         [HttpPost("header")]
         public async Task<ActionResult> UpdateHeader(IFormFile image)
         {
-            await service.UpdateHeader(image);
-            return Ok();
+            Guid? imageId = await service.UpdateHeader(image);
+            return Ok(ImageHandler.GetImageUri(GetHostPath(), imageId));
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

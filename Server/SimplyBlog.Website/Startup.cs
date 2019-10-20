@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Website.Configuration;
+using SimplyBlog.Website.Extensions;
 using SimplyBlog.Website.Mapping;
 
 namespace SimplyBlog.Website
@@ -100,6 +101,7 @@ namespace SimplyBlog.Website
                 app.UseStatusCodePages();
             }
 
+            app.UseMiddleware(typeof(ExceptionHandlerMiddleware));
             app.UseMvc();
         }
     }

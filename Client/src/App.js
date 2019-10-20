@@ -2,44 +2,46 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import './App.css';
 import Layout from './components/Layout/Layout';
-import PostsList from './components/PostsList/PostsList';
-import Post from './components/Post/Post';
+import PostsList from './containers/PostsList/PostsList';
+import Post from './containers/Post/Post';
 import { connect } from 'react-redux';
 import * as actions from './store/actions/index';
 import Auth from './containers/Auth/Auth';
-import NewPost from './components/Post/NewPost/NewPost';
+import NewPost from './containers/Post/NewPost/NewPost';
 import EditPost from './components/Post/EditPost/EditPost';
-import About from './components/About/About';
-import Settings from './components/Settings/Settings';
-import Axios, { options } from './axios-api';
+import About from './containers/About/About';
+import Settings from './containers/Settings/Settings';
+import { getHeaderAsync, postHeaderAsync, postImageAsync } from './httpClient';
 
 class App extends React.Component {
   state = {
     headerImg: null,
     headerRef: null,
     uploadImageRef: null,
-    imageUrl: null,
+    imageUrl: "",
     start: true,
-    editMode: false
+    editMode: false,
+    loading: true
+  }
+
+  componentDidCatch(error, info) {
+    console.error("Error Stack Trace: " + info.componentStack);
   }
 
   componentDidMount() {
     this.props.onTryAutoSignup();
 
     if (this.state.start) {
-      this.setState({ start: false });
+      this.setState({ start: false, loading: true });
       this.getHeader();
     }
   }
 
   getHeader() {
-    Axios.get("/api/blog/header")
-      .then(response => {
-        const url = response.data ? response.data : null;
-        this.setState({ headerImg: url })
-      }).catch(err => {
-        console.log(err);
-      })
+    getHeaderAsync().then(data => {
+      const url = data ? data : null;
+      this.setState({ headerImg: url, loading: false });
+    });
   }
 
   toggleEditMode = (e) => {
@@ -56,13 +58,11 @@ class App extends React.Component {
 
     let image = new FormData();
     image.append("image", this.state.headerRef.current.files[0]);
-
-    Axios.post('/api/admin/header/', image, options(this.props.token))
-      .then(response => {
-        this.getHeader();
-      }).catch(err => {
-        console.log(err);
-      })
+    this.setState({ loading: true });
+    postHeaderAsync(image, this.props.token).then(data => {
+      const url = data ? data : null;
+      this.setState({ headerImg: url, loading: false });
+    });
   }
 
   handleRef = (ref) => {
@@ -74,13 +74,10 @@ class App extends React.Component {
 
     let image = new FormData();
     image.append("image", this.state.uploadImageRef.current.files[0]);
-
-    Axios.post('/api/admin/upload/', image, options(this.props.token))
-      .then(response => {
-        this.setState({ imageUrl: response.data });
-      }).catch(err => {
-        console.log(err);
-      })
+    this.setState({ loading: true });
+    postImageAsync(image, this.props.token).then(data => {
+      this.setState({ imageUrl: data, loading: false });
+    });
   }
 
   render() {

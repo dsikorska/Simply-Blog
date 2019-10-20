@@ -1,65 +1,48 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { postNewPostAsync } from '../../../httpClient';
+import Button from '../../../components/UI/Button/Button';
+import Panel from '../../../components/UI/Panel/Panel';
+import Input from '../../../components/UI/Input/Input';
+import RichTextbox from '../../../components/UI/RichTextbox/RichTextbox';
+import { EditorState, convertToRaw } from 'draft-js';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Button from './../UI/Button/Button';
-import Input from './../UI/Input/Input';
-import { connect } from 'react-redux';
-import Axios, { options } from '../../axios-api';
 
-class Settings extends React.Component {
+class NewPost extends React.Component {
     state = {
-        controls: {
-            login: {
-                name: 'login',
+        form: {
+            title: {
                 elementType: 'input',
                 elementConfig: {
-                    type: 'input',
-                    placeholder: 'Enter new login'
+                    type: 'text',
+                    placeholder: 'Title (required)'
                 },
                 value: '',
                 validation: {
-                    minLength: 6
+                    required: true
                 },
-                valid: true,
+                valid: false,
                 touched: false
             },
-            password: {
-                name: 'password',
+            tags: {
                 elementType: 'input',
                 elementConfig: {
-                    type: 'password',
-                    placeholder: 'Enter new password'
+                    type: 'text',
+                    placeholder: 'Use space to separate tags eg. programming c# blog',
                 },
                 value: '',
-                validation: {
-                    minLength: 6
-                },
-                valid: true,
-                touched: false
-            },
-            token: {
-                name: 'token',
-                elementType: 'input',
-                elementConfig: {
-                    type: 'input',
-                    placeholder: 'Enter new secret text (used for authorization)'
-                },
-                value: '',
-                validation: {
-                    minLength: 64
-                },
                 valid: true,
                 touched: false
             }
         },
         formIsValid: false,
         loading: false,
+        editor: EditorState.createEmpty()
     }
 
-    componentDidMount() {
-        if (!this.props.isAuthenticated) {
-            this.props.history.push('/');
-        }
+    onEditorChange = (editorState) => {
+        this.setState({ editor: editorState });
     }
 
     checkValidity(value, rules) {
@@ -73,15 +56,11 @@ class Settings extends React.Component {
             isValid = value.trim() !== '' && isValid;
         }
 
-        if (rules.minLength) {
-            isValid = value.length >= rules.minLength && isValid;
-        }
-
         return isValid;
     }
 
     inputChangedHandler = (event, inputId) => {
-        const updatedForm = { ...this.state.controls };
+        const updatedForm = { ...this.state.form };
         const updatedFormElement = { ...updatedForm[inputId] };
         updatedFormElement.value = event.target.value;
         updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
@@ -93,62 +72,46 @@ class Settings extends React.Component {
             formIsValid = updatedForm[inputId].valid && formIsValid;
         }
 
-        this.setState({ controls: updatedForm, formIsValid: formIsValid });
+        this.setState({ form: updatedForm, formIsValid: formIsValid });
     }
 
-    clearForm = () => {
-        let controls = { ...this.state.controls };
-
-        for (let key in this.state.controls) {
-            controls = {
-                ...controls,
-                [key]: {
-                    ...this.state.controls[key],
-                    value: ''
-                }
-            }
-        }
-
-        this.setState({ controls: controls });
-    }
-
-    formSubmitHandler = (e) => {
+    onFormSubmitHandler = (e) => {
         e.preventDefault();
 
         if (!this.state.formIsValid) {
             return;
         }
 
-        if (!window.confirm("Are you sure?")) {
-            return;
-        }
+        let post = new FormData();
+        const tags = this.state.form.tags.value.split(' ');
 
-        const credential = {
-            login: this.state.controls.login.value,
-            password: this.state.controls.password.value,
-            secret: this.state.controls.token.value
-        }
+        post.append("categories", tags)
+        post.append("title", this.state.form.title.value);
+        post.append("image", this.refs.image.files[0]);
+        let content = this.state.editor.getCurrentContent();
+        content = convertToRaw(content);
+        post.append("content", JSON.stringify(content));
 
-        Axios.post('/api/admin/credential', credential, options(this.props.token))
-            .then(response => {
-                this.clearForm();
-            }).catch(err => {
-                console.log(err);
-            })
+        postNewPostAsync(post, this.props.token).then(data => {
+            this.props.history.push('/');
+        });
     }
 
     render() {
         const formElements = [];
-        for (let key in this.state.controls) {
+        for (let key in this.state.form) {
             formElements.push({
                 id: key,
-                config: this.state.controls[key]
+                config: this.state.form[key]
             });
         }
 
         return (
-            <div>
-                <form onSubmit={this.formSubmitHandler}>
+            <Panel.body>
+                <form onSubmit={this.onFormSubmitHandler}>
+                    <div style={{ padding: "0.375rem 0.75rem" }}>
+                        <input type="file" name="image" ref="image" accept="image/*" className="Input" />
+                    </div>
                     {formElements.map(element => (
                         <Input
                             key={element.id}
@@ -161,6 +124,10 @@ class Settings extends React.Component {
                             touched={element.config.touched}
                             className={element.config.className} />
                     ))}
+                    <RichTextbox
+                        onEditorChange={this.onEditorChange}
+                        editorState={this.state.editor}
+                    />
                     <div className="Button">
                         <Button btnType="Success">
                             <span><FontAwesomeIcon icon={faSave} /></span>
@@ -168,16 +135,15 @@ class Settings extends React.Component {
                         </Button>
                     </div>
                 </form>
-            </div>
+            </Panel.body>
         )
     }
-};
+}
 
 const mapStateToProps = state => {
     return {
-        isAuthenticated: state.auth.token !== null,
         token: state.auth.token
     };
 }
 
-export default connect(mapStateToProps)(Settings);
+export default connect(mapStateToProps)(NewPost);

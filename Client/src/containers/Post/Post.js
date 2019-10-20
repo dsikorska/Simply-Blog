@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import './Post.module.css';
-import Axios from '../../axios-api';
-import Spinner from '../UI/Spinner/Spinner';
+import { getPostAsync } from '../../httpClient';
+import Spinner from '../../components/UI/Spinner/Spinner';
 import Comments from './Comments/Comments';
-import Panel from './../UI/Panel/Panel';
+import Panel from '../../components/UI/Panel/Panel';
 import { EditorState, convertFromRaw } from 'draft-js';
-import RichTextbox, { getPluginsDecorators } from '../UI/RichTextbox/RichTextbox';
+import RichTextbox, { getPluginsDecorators } from '../../components/UI/RichTextbox/RichTextbox';
 import { faCalendar, faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -19,20 +19,16 @@ class Post extends Component {
     componentDidMount() {
         if (!this.state.post) {
             this.setState({ loading: true });
-            Axios.get('/api/blog/' + this.props.match.params.id)
-                .then(response => {
-                    const post = {
-                        ...response.data
-                    };
-                    const contentState = convertFromRaw(JSON.parse(response.data.content));
-                    const decorators = getPluginsDecorators();
-                    const content = EditorState.createWithContent(contentState, decorators);
+            getPostAsync(this.props.match.params.id).then(data => {
+                const post = {
+                    ...data
+                };
+                const contentState = convertFromRaw(JSON.parse(data.content));
+                const decorators = getPluginsDecorators();
+                const content = EditorState.createWithContent(contentState, decorators);
 
-                    this.setState({ post: post, content: content, loading: false });
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                this.setState({ post: post, content: content, loading: false });
+            });
         }
     }
 
@@ -40,7 +36,7 @@ class Post extends Component {
         const tags = this.state.post ? this.state.post.categories.map(tag => {
             return (<span key={tag + "tg"}><FontAwesomeIcon icon={faTag} />{tag}</span>);
         }) : null;
-        const post = this.state.post ? (
+        const post = !this.state.loading ? (
             <div>
                 <Panel.body>
                     <div className="Container">

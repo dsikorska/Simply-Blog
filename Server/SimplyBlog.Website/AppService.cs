@@ -19,7 +19,10 @@ namespace SimplyBlog.Website
         private readonly IWritableOptions<AboutWritableOption> writableAbout;
         private readonly IWritableOptions<HeaderWritableOption> writableHeader;
 
-        public AppService(IWritableOptions<CredentialWritableOption> writableCredentials, IWritableOptions<AboutWritableOption> writableAbout, IWritableOptions<HeaderWritableOption> writableHeader)
+        public AppService(
+            IWritableOptions<CredentialWritableOption> writableCredentials,
+            IWritableOptions<AboutWritableOption> writableAbout,
+            IWritableOptions<HeaderWritableOption> writableHeader)
         {
             this.writableCredential = writableCredentials;
             this.writableAbout = writableAbout;
@@ -67,7 +70,7 @@ namespace SimplyBlog.Website
             return response;
         }
 
-        public bool ValidateUser(string username, string password)
+        private bool ValidateUser(string username, string password)
         {
             string login = writableCredential.Value.Login;
             string hashPassword = writableCredential.Value.Password;
@@ -171,13 +174,15 @@ namespace SimplyBlog.Website
             });
         }
 
-        public async Task UpdateHeader(IFormFile image, CancellationToken cancellationtoken = default(CancellationToken))
+        public async Task<Guid?> UpdateHeader(IFormFile image, CancellationToken cancellationtoken = default(CancellationToken))
         {
             Guid? imageId = await ImageHandler.SaveImageToFile(image, cancellationtoken);
             writableHeader.Update(opt =>
             {
                 opt.ImageId = imageId;
             });
+
+            return imageId;
         }
 
         public async Task<string> UploadImage(string hostPath, IFormFile image, CancellationToken cancellationtoken = default(CancellationToken))

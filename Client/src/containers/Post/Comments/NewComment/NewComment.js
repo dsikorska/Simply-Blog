@@ -1,10 +1,11 @@
 import React from 'react';
-import Axios from '../../../../axios-api';
-import Button from './../../../UI/Button/Button';
-import Panel from '../../../UI/Panel/Panel';
-import Input from './../../../UI/Input/Input';
+import { postNewCommentAsync } from '../../../../httpClient';
+import Button from '../../../../components/UI/Button/Button';
+import Panel from '../../../../components/UI/Panel/Panel';
+import Input from '../../../../components/UI/Input/Input';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Spinner from '../../../../components/UI/Spinner/Spinner';
 
 class NewComment extends React.Component {
     state = {
@@ -97,7 +98,7 @@ class NewComment extends React.Component {
             }
         }
 
-        this.setState({ commentForm: updatedCommentForm });
+        this.setState({ commentForm: updatedCommentForm, loading: false });
     }
 
     onFormSubmitHandler = (e) => {
@@ -114,14 +115,11 @@ class NewComment extends React.Component {
             postId: this.props.id
         }
 
-        Axios.post('/api/blog/' + this.props.id + '/new', comment)
-            .then(response => {
-                this.clearForm();
-                this.props.submit();
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        this.setState({ loading: true });
+        postNewCommentAsync(this.props.id, comment).then(data => {
+            this.clearForm();
+            this.props.submit();
+        });
     }
 
     render() {
@@ -134,31 +132,32 @@ class NewComment extends React.Component {
         }
 
         return (
-            <div className="M30">
-                <Panel.body>
-                    <form onSubmit={this.onFormSubmitHandler}>
-                        {formElements.map(element => (
-                            <Input
-                                key={element.id}
-                                elementType={element.config.elementType}
-                                elementConfig={element.config.elementConfig}
-                                value={element.config.value}
-                                changed={(event) => this.inputChangedHandler(event, element.id)}
-                                shouldValidate={element.config.validation}
-                                invalid={!element.config.valid}
-                                touched={element.config.touched}
-                                className={element.config.className} />
-                        ))}
+            (this.state.loading ? <Spinner /> :
+                <div className="M30">
+                    <Panel.body>
+                        <form onSubmit={this.onFormSubmitHandler}>
+                            {formElements.map(element => (
+                                <Input
+                                    key={element.id}
+                                    elementType={element.config.elementType}
+                                    elementConfig={element.config.elementConfig}
+                                    value={element.config.value}
+                                    changed={(event) => this.inputChangedHandler(event, element.id)}
+                                    shouldValidate={element.config.validation}
+                                    invalid={!element.config.valid}
+                                    touched={element.config.touched}
+                                    className={element.config.className} />
+                            ))}
 
-                        <div className="Button">
-                            <Button btnType="Success">
-                                <span><FontAwesomeIcon icon={faSave} /></span>
-                                Save
+                            <div className="Button">
+                                <Button btnType="Success">
+                                    <span><FontAwesomeIcon icon={faSave} /></span>
+                                    Save
                             </Button>
-                        </div>
-                    </form>
-                </Panel.body>
-            </div>
+                            </div>
+                        </form>
+                    </Panel.body>
+                </div>)
         )
     }
 };
