@@ -12,6 +12,7 @@ import ReactPaginate from 'react-paginate';
 import { EditorState, convertFromRaw } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTag } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 class PostsList extends Component {
     state = {
@@ -65,6 +66,7 @@ class PostsList extends Component {
         this.setState({ loading: true });
         deletePostAsync(id, this.props.token).then(data => {
             this.loadPosts(this.state.currentPage, null, true);
+            toast("Post deleted successfully!", { type: toast.TYPE.WARNING });
         });
     }
 

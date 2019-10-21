@@ -6,6 +6,7 @@ import Input from '../../components/UI/Input/Input';
 import { connect } from 'react-redux';
 import { postCredentialAsync } from '../../httpClient';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import { toast } from 'react-toastify';
 
 class Settings extends React.Component {
     state = {
@@ -15,7 +16,7 @@ class Settings extends React.Component {
                 elementType: 'input',
                 elementConfig: {
                     type: 'input',
-                    placeholder: 'Enter new login'
+                    placeholder: 'Enter new login. Minimum length is 6 characters.'
                 },
                 value: '',
                 validation: {
@@ -29,7 +30,7 @@ class Settings extends React.Component {
                 elementType: 'input',
                 elementConfig: {
                     type: 'password',
-                    placeholder: 'Enter new password'
+                    placeholder: 'Enter new password. Minimum length is 6 characters.'
                 },
                 value: '',
                 validation: {
@@ -43,7 +44,7 @@ class Settings extends React.Component {
                 elementType: 'input',
                 elementConfig: {
                     type: 'input',
-                    placeholder: 'Enter new secret text (used for authorization)'
+                    placeholder: 'Enter new secret text (used for authorization). Minimum text length is 64 characters.'
                 },
                 value: '',
                 validation: {
@@ -132,6 +133,7 @@ class Settings extends React.Component {
         this.setState({ loading: true });
         postCredentialAsync(credential, this.props.token).then(data => {
             this.clearForm();
+            toast("Data updated successfully!", { type: toast.TYPE.SUCCESS });
         });
     }
 

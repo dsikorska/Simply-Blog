@@ -8,10 +8,12 @@ import { connect } from 'react-redux';
 import * as actions from './store/actions/index';
 import Auth from './containers/Auth/Auth';
 import NewPost from './containers/Post/NewPost/NewPost';
-import EditPost from './components/Post/EditPost/EditPost';
+import EditPost from './containers/Post/EditPost/EditPost';
 import About from './containers/About/About';
 import Settings from './containers/Settings/Settings';
 import { getHeaderAsync, postHeaderAsync, postImageAsync } from './httpClient';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class App extends React.Component {
   state = {
@@ -24,13 +26,8 @@ class App extends React.Component {
     loading: true
   }
 
-  componentDidCatch(error, info) {
-    console.error("Error Stack Trace: " + info.componentStack);
-  }
-
   componentDidMount() {
     this.props.onTryAutoSignup();
-
     if (this.state.start) {
       this.setState({ start: false, loading: true });
       this.getHeader();
@@ -62,6 +59,7 @@ class App extends React.Component {
     postHeaderAsync(image, this.props.token).then(data => {
       const url = data ? data : null;
       this.setState({ headerImg: url, loading: false });
+      toast("Header updated successfully!", { type: toast.TYPE.SUCCESS });
     });
   }
 
@@ -77,6 +75,7 @@ class App extends React.Component {
     this.setState({ loading: true });
     postImageAsync(image, this.props.token).then(data => {
       this.setState({ imageUrl: data, loading: false });
+      toast("Image uploaded successfully!", { type: toast.TYPE.SUCCESS });
     });
   }
 
@@ -101,6 +100,7 @@ class App extends React.Component {
           <Route path='/:id' component={Post} />
           <Route path='/' exact component={PostsList} />
         </Switch>
+        <ToastContainer newestOnTop={true} />
       </Layout>
     );
   }

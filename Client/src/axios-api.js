@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import { toast } from 'react-toastify';
 
 export function options(token) {
     return {
@@ -27,6 +28,6 @@ instance.interceptors.response.use(function (response) {
     // Do something with response data
     return response;
 }, function (error) {
-    console.log(error);
+    toast(error.response.data.Error, { type: toast.TYPE.ERROR });
     return Promise.reject(error);
 });

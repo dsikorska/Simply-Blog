@@ -10,6 +10,7 @@ import RichTextbox from '../../components/UI/RichTextbox/RichTextbox';
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { connect } from 'react-redux';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import { toast } from 'react-toastify';
 
 class About extends React.Component {
     state = {
@@ -55,6 +56,7 @@ class About extends React.Component {
         postAboutAsync(about, this.props.token).then(data => {
             this.setState({ editMode: false });
             this.getData();
+            toast("Data updated successfully!", { type: toast.TYPE.SUCCESS });
         });
     }
 

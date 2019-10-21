@@ -6,6 +6,7 @@ import Input from '../../../../components/UI/Input/Input';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Spinner from '../../../../components/UI/Spinner/Spinner';
+import { toast } from 'react-toastify';
 
 class NewComment extends React.Component {
     state = {
@@ -119,6 +120,7 @@ class NewComment extends React.Component {
         postNewCommentAsync(this.props.id, comment).then(data => {
             this.clearForm();
             this.props.submit();
+            toast("Your comment saved successfully!", { type: toast.TYPE.SUCCESS });
         });
     }
 

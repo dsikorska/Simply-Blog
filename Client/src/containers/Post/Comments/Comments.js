@@ -6,6 +6,7 @@ import NewComment from './NewComment/NewComment';
 import { connect } from 'react-redux';
 import Panel from '../../../components/UI/Panel/Panel';
 import { getCommentsAsync } from '../../../httpClient';
+import { toast } from 'react-toastify';
 
 class Comments extends React.Component {
     state = {
@@ -32,6 +33,7 @@ class Comments extends React.Component {
         deleteCommentAsync(this.props.id, id, this.props.token).then(data => {
             const comments = this.state.comments.filter(e => e.id !== id);
             this.setState({ comments: comments, loading: false });
+            toast("Comment deleted successfully!", { type: toast.TYPE.WARNING });
         });
     }
 

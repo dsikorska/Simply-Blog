@@ -8,6 +8,7 @@ import RichTextbox from '../../../components/UI/RichTextbox/RichTextbox';
 import { EditorState, convertToRaw } from 'draft-js';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-toastify';
 
 class NewPost extends React.Component {
     state = {
@@ -94,6 +95,7 @@ class NewPost extends React.Component {
 
         postNewPostAsync(post, this.props.token).then(data => {
             this.props.history.push('/');
+            toast("Post created successfully!", { type: toast.TYPE.SUCCESS });
         });
     }
 
