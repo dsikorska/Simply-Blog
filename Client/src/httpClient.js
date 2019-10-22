@@ -42,6 +42,13 @@ export function getAboutAsync() {
         });
 }
 
+export function getImagesAsync(token) {
+    return Axios.get('/api/admin/images', options(token))
+        .then(response => {
+            return response.data;
+        });
+}
+
 export function postNewPostAsync(post, token) {
     return Axios.post('/api/blog/new', post, options(token))
         .then(response => {
@@ -93,6 +100,13 @@ export function deletePostAsync(id, token) {
 
 export function deleteCommentAsync(postId, id, token) {
     return Axios.delete('/api/blog/' + postId + '/' + id, options(token))
+        .then(response => {
+            return response.data;
+        });
+}
+
+export function deleteImageAsync(id, token) {
+    return Axios.delete('/api/admin/images/' + id, options(token))
         .then(response => {
             return response.data;
         });

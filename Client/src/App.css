@@ -66,6 +66,36 @@ form {
     text-align: center;
 }
 
+.FlexContainer {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.FlexImg {
+  max-width: 33%;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+}
+
+.FlexImg img {
+  max-width: 100%;
+}
+
+.Overlap {
+  position: absolute;
+}
+
+.Overlap button {
+  margin: 0 5px;
+}
+
+.FlexImg button {
+  text-align: right;
+}
+
 .Content {
     text-align: left !important;
     max-width: 100% !important;

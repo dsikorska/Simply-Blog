@@ -26,7 +26,7 @@ class Post extends Component {
                 const contentState = convertFromRaw(JSON.parse(data.content));
                 const decorators = getPluginsDecorators();
                 const content = EditorState.createWithContent(contentState, decorators);
-
+                document.title = post.title;
                 this.setState({ post: post, content: content, loading: false });
             });
         }

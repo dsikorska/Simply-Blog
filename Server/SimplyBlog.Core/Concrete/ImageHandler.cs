@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Core.Concrete
 {
@@ -45,6 +47,22 @@ namespace SimplyBlog.Core.Concrete
             }
 
             File.Delete(Path.Combine(BasePath, "images", id.ToString() + ".jpeg"));
+        }
+
+        public static IEnumerable<ImageDto> GetAll(string hostPath)
+        {
+            List<ImageDto> result = new List<ImageDto>();
+            IEnumerable<string> files = Directory.EnumerateFiles(Path.Combine(BasePath, "images"));
+            List<string> filesNames = new List<string>();
+
+            foreach (string item in files)
+            {
+                string path = new Uri(string.Concat(hostPath, PublicPath.TrimStart('/'), "/images/", Path.GetFileName(item))).ToString();
+                ImageDto image = new ImageDto() { Id = Path.GetFileNameWithoutExtension(item), Path = path };
+                result.Add(image);
+            }
+
+            return result;
         }
     }
 }

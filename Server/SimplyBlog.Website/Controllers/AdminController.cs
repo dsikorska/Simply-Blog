@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SimplyBlog.Core.Concrete;
+using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Models;
 using SimplyBlog.Website.Models.DTOs;
 
@@ -23,7 +25,7 @@ namespace SimplyBlog.Website.Controllers
             this.service = service;
             this.logger = logger;
         }
-        //todo images manager
+
         [HttpPost("auth")]
         public ActionResult Authenticate(LoginModel model)
         {
@@ -67,6 +69,22 @@ namespace SimplyBlog.Website.Controllers
         {
             string url = await service.UploadImage(GetHostPath(), image);
             return Ok(url);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("images")]
+        public ActionResult GetImages()
+        {
+            IEnumerable<ImageDto> images = service.GetImages(GetHostPath());
+            return Ok(images);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("images/{id}")]
+        public ActionResult DeleteImage(Guid id)
+        {
+            service.DeleteImage(id);
+            return Ok();
         }
 
         private string GetHostPath()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Core.Concrete;
+using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Configuration;
 using SimplyBlog.Website.Models.DTOs;
 
@@ -189,6 +191,16 @@ namespace SimplyBlog.Website
         {
             Guid? id = await ImageHandler.SaveImageToFile(image, cancellationtoken);
             return ImageHandler.GetImageUri(hostPath, id);
+        }
+
+        public IEnumerable<ImageDto> GetImages(string hostPath)
+        {
+            return ImageHandler.GetAll(hostPath);
+        }
+
+        public void DeleteImage(Guid? id)
+        {
+            ImageHandler.DeleteImage(id);
         }
     }
 }

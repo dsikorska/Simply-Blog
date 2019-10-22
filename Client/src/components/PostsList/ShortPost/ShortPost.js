@@ -41,7 +41,7 @@ const shortPost = (props) => {
                 )
                     : null}
             </Panel.header>
-            <Link to={{ pathname: props.id + '/' + props.title.toLowerCase().replace(' ', '-') }}>
+            <Link to={{ pathname: props.id + '/' + props.title.toLowerCase().split(' ').join('-') }}>
                 <Panel.body>
                     {props.image ?
                         <Panel.body.img>

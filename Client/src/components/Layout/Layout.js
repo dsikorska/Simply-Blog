@@ -4,9 +4,10 @@ import styles from './Layout.module.css';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserCog, faCogs, faEdit, faSave, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faUserCog, faCogs, faSave, faUpload, faCopy } from '@fortawesome/free-solid-svg-icons';
 import Button from './../UI/Button/Button';
 import Panel from '../UI/Panel/Panel';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const Layout = (props) => {
     const headerRef = useRef(null);
@@ -19,6 +20,24 @@ const Layout = (props) => {
 
     return (
         <Auxiliary>
+            {props.isAuthenticated ?
+                <div className="M30">
+                    <Panel.body>
+                        <h3>Update header image</h3>
+                        <form onSubmit={props.updateHeaderHandler} className="ButtonsGroup">
+                            <div style={{ padding: "0.375rem 0.75rem", width: "85%" }}>
+                                <input type="file" name="image" ref={headerRef} accept="image/*" className="Input" />
+                            </div>
+                            <div className="Button" style={{ width: "15%" }}>
+                                <Button btnType="Success">
+                                    <span><FontAwesomeIcon icon={faSave} /></span>
+                                    Save
+                                </Button>
+                            </div>
+                        </form>
+                    </Panel.body>
+                </div>
+                : null}
             {props.headerImg ?
                 <header className={styles.Header}>
                     <div className="Img">
@@ -26,43 +45,31 @@ const Layout = (props) => {
                     </div>
                 </header>
                 : null}
-            {props.editMode ?
-                <form onSubmit={props.updateHeaderHandler}>
-                    <div style={{ padding: "0.375rem 0.75rem" }}>
-                        <input type="file" name="image" ref={headerRef} accept="image/*" className="Input" />
-                    </div>
-                    <div className="Button">
-                        <Button btnType="Danger">
-                            <span><FontAwesomeIcon icon={faSave} /></span>
-                            Change header image
-                        </Button>
-                    </div>
-                </form>
-                : null}
-            {props.isAuthenticated ?
-                <div className="Button">
-                    <Button btnType="Secondary" clicked={props.toggleEditMode}>
-                        <span><FontAwesomeIcon icon={faEdit} /></span>
-                        Edit
-                    </Button>
-                </div>
-                : null}
             {props.isAuthenticated ?
                 <Panel.body>
-                    <form onSubmit={props.uploadImageHandler}>
-                        <div style={{ padding: "0.375rem 0.75rem" }}>
+                    <h3>Upload image to server</h3>
+                    <form onSubmit={props.uploadImageHandler} className="ButtonsGroup">
+                        <div style={{ padding: "0.375rem 0.75rem", width: "85%" }}>
                             <input type="file" name="uploadImage" ref={uploadImageRef} accept="image/*" className="Input" />
                         </div>
-                        <div className="Button">
+                        <div className="Button" style={{ width: "15%" }}>
                             <Button btnType="Success">
                                 <span><FontAwesomeIcon icon={faUpload} /></span>
-                                Get image URL
-                        </Button>
+                                Upload
+                            </Button>
                         </div>
                     </form>
-                    <input className="Input" disabled value={props.imageUrl} />
+                    <div className="ButtonsGroup" style={{ padding: "0.375rem 0.75rem", width: "100%" }}>
+                        <input className="Input" disabled value={props.imageUrl} style={{ width: "90%", marginTop: "0.35rem" }} />
+                        <Button btnType="Secondary">
+                            <CopyToClipboard text={props.imageUrl}>
+                                <FontAwesomeIcon icon={faCopy} />
+                            </CopyToClipboard>
+                        </Button>
+                    </div>
                 </Panel.body>
-                : null}
+                : null
+            }
             <nav className={styles.Nav}>
                 <div className={styles.NavContent}>
                     <NavLink exact to='/' activeClassName={styles.ActiveNavLink}>Posts</NavLink>
@@ -87,7 +94,7 @@ const Layout = (props) => {
             <footer className={styles.Footer}>
                 <a href="https://github.com/LadyHail/Simply-Blog" className="link">Powered by Simply Blog.</a>
             </footer>
-        </Auxiliary>
+        </Auxiliary >
     );
 };
 

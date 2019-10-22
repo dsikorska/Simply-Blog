@@ -20,9 +20,8 @@ class App extends React.Component {
     headerImg: null,
     headerRef: null,
     uploadImageRef: null,
-    imageUrl: "",
+    imageUrl: "Link to uploaded image.",
     start: true,
-    editMode: false,
     loading: true
   }
 
@@ -39,11 +38,6 @@ class App extends React.Component {
       const url = data ? data : null;
       this.setState({ headerImg: url, loading: false });
     });
-  }
-
-  toggleEditMode = (e) => {
-    e.preventDefault();
-    this.setState({ editMode: !this.state.editMode });
   }
 
   updateHeaderHandler = (e) => {
@@ -87,10 +81,8 @@ class App extends React.Component {
         imageUrl={this.state.imageUrl}
         headerImg={this.state.headerImg}
         isAuthenticated={this.props.isAuthenticated}
-        editMode={this.state.editMode}
-        toggleEditMode={this.toggleEditMode}
         updateHeaderHandler={this.updateHeaderHandler}
-        uploadImageHandler={this.uploadImageHandler}>
+        uploadImageHandler={this.uploadImageHandler} >
         <Switch>
           <Route path='/settings' component={Settings} />
           <Route path='/about' component={About} />

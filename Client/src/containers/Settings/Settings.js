@@ -1,12 +1,17 @@
 import React from 'react';
-import { faSave } from '@fortawesome/free-solid-svg-icons';
+import { faSave, faMinus, faCopy, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from '../../components/UI/Button/Button';
 import Input from '../../components/UI/Input/Input';
 import { connect } from 'react-redux';
-import { postCredentialAsync } from '../../httpClient';
+import { postCredentialAsync, deleteImageAsync } from '../../httpClient';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import { toast } from 'react-toastify';
+import Panel from './../../components/UI/Panel/Panel';
+import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
+import { getImagesAsync } from './../../httpClient';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import * as actions from '../../store/actions/index';
 
 class Settings extends React.Component {
     state = {
@@ -56,11 +61,17 @@ class Settings extends React.Component {
         },
         formIsValid: false,
         loading: false,
+        images: []
     }
 
     componentDidMount() {
         if (!this.props.isAuthenticated) {
             this.props.history.push('/');
+        } else {
+            getImagesAsync(this.props.token).then(data => {
+                this.setState({ images: data });
+            });
+            document.title = "Settings";
         }
     }
 
@@ -137,7 +148,24 @@ class Settings extends React.Component {
         });
     }
 
+    deleteImage = (id) => {
+        deleteImageAsync(id, this.props.token).then(_ => {
+            getImagesAsync(this.props.token).then(data => {
+                this.setState({ images: data });
+            });
+        });
+    }
+
+    logout = (e) => {
+        e.preventDefault();
+        this.props.onLogout();
+    }
+
     render() {
+        if (!this.props.isAuthenticated) {
+            this.props.history.push('/login');
+        }
+
         const formElements = [];
         for (let key in this.state.controls) {
             formElements.push({
@@ -146,30 +174,65 @@ class Settings extends React.Component {
             });
         }
 
-        return (
-            (this.state.loading ? <Spinner /> :
-                <div>
-                    <form onSubmit={this.formSubmitHandler}>
-                        {formElements.map(element => (
-                            <Input
-                                key={element.id}
-                                elementType={element.config.elementType}
-                                elementConfig={element.config.elementConfig}
-                                value={element.config.value}
-                                changed={(event) => this.inputChangedHandler(event, element.id)}
-                                shouldValidate={element.config.validation}
-                                invalid={!element.config.valid}
-                                touched={element.config.touched}
-                                className={element.config.className} />
-                        ))}
-                        <div className="Button">
-                            <Button btnType="Success">
-                                <span><FontAwesomeIcon icon={faSave} /></span>
-                                Save
-                        </Button>
+        const images = this.state.images.map(picture => {
+            return (
+                <div className="FlexImg" key={picture.id}>
+                    <div className="Overlap">
+                        <div style={{ padding: "0" }}>
+                            <Button btnType="Danger" clicked={() => this.deleteImage(picture.id)} >
+                                <FontAwesomeIcon icon={faMinus} />
+                            </Button>
+                            <Button btnType="Secondary">
+                                <CopyToClipboard text={picture.path}>
+                                    <FontAwesomeIcon icon={faCopy} />
+                                </CopyToClipboard>
+                            </Button>
                         </div>
-                    </form>
-                </div>)
+                    </div>
+                    <img src={picture.path} alt="" />
+                </div>
+            );
+        });
+
+        return (
+            <Auxiliary>
+                <div className="Button" style={{ textAlign: "left" }}>
+                    <Button btnType="Danger" clicked={this.logout}>
+                        <span><FontAwesomeIcon icon={faSignOutAlt} /></span>
+                        Logout
+                    </Button>
+                </div>
+                {this.state.loading ? <Spinner /> :
+                    <Panel.body>
+                        <h2>Update credentials</h2>
+                        <form onSubmit={this.formSubmitHandler}>
+                            {formElements.map(element => (
+                                <Input
+                                    key={element.id}
+                                    elementType={element.config.elementType}
+                                    elementConfig={element.config.elementConfig}
+                                    value={element.config.value}
+                                    changed={(event) => this.inputChangedHandler(event, element.id)}
+                                    shouldValidate={element.config.validation}
+                                    invalid={!element.config.valid}
+                                    touched={element.config.touched}
+                                    className={element.config.className} />
+                            ))}
+                            <div className="Button">
+                                <Button btnType="Success">
+                                    <span><FontAwesomeIcon icon={faSave} /></span>
+                                    Save
+                                </Button>
+                            </div>
+                        </form>
+                    </Panel.body>}
+                <Panel.body>
+                    <h2>All stored images</h2>
+                    <div className="FlexContainer">
+                        {images}
+                    </div>
+                </Panel.body>
+            </Auxiliary >
         )
     }
 };
@@ -181,4 +244,10 @@ const mapStateToProps = state => {
     };
 }
 
-export default connect(mapStateToProps)(Settings);
+const mapDispatchToProps = dispatch => {
+    return {
+        onLogout: () => dispatch(actions.logout())
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Settings);
