@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using SimplyBlog.Core.Abstract;
 using SimplyBlog.Core.Concrete;
 using SimplyBlog.Website.Configuration;
+using SimplyBlog.Website.Extensions;
 using SimplyBlog.Website.Mapping;
 
 namespace SimplyBlog.Website
@@ -29,9 +30,12 @@ namespace SimplyBlog.Website
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+
             // Ref: https://forums.asp.net/t/2148624.aspx?can+we+update+appsettings+json+in+controller+
-            services.ConfigureWritable<Credentials>(Configuration.GetSection("credentials"));
-            services.ConfigureWritable<Secret>(Configuration.GetSection("secret"));
+            services.ConfigureWritable<CredentialWritableOption>(Configuration.GetSection("credentials"));
+            services.ConfigureWritable<AboutWritableOption>(Configuration.GetSection("about"));
+            services.ConfigureWritable<HeaderWritableOption>(Configuration.GetSection("header"));
 
             string path = Environment.CurrentDirectory + @"\Data";
             Directory.CreateDirectory(path);
@@ -51,7 +55,7 @@ namespace SimplyBlog.Website
 
             // Ref: https://jasonwatmore.com/post/2018/08/14/aspnet-core-21-jwt-authentication-tutorial-with-example-api
             // Ref: https://www.blinkingcaret.com/2017/09/06/secure-web-api-in-asp-net-core/
-            byte[] key = Encoding.ASCII.GetBytes(Configuration.GetSection("secret")["value"].ToString());
+            byte[] key = Encoding.ASCII.GetBytes(Configuration.GetSection("credentials")["secret"].ToString());
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -97,6 +101,7 @@ namespace SimplyBlog.Website
                 app.UseStatusCodePages();
             }
 
+            app.UseMiddleware(typeof(ExceptionHandlerMiddleware));
             app.UseMvc();
         }
     }

@@ -1,13 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Axios, { options } from '../../../axios-api';
-import Button from './../../UI/Button/Button';
-import Panel from './../../UI/Panel/Panel';
-import Input from './../../UI/Input/Input';
-import RichTextbox from '../../UI/RichTextbox/RichTextbox';
+import { postNewPostAsync } from '../../../httpClient';
+import Button from '../../../components/UI/Button/Button';
+import Panel from '../../../components/UI/Panel/Panel';
+import Input from '../../../components/UI/Input/Input';
+import RichTextbox from '../../../components/UI/RichTextbox/RichTextbox';
 import { EditorState, convertToRaw } from 'draft-js';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-toastify';
 
 class NewPost extends React.Component {
     state = {
@@ -92,13 +93,10 @@ class NewPost extends React.Component {
         content = convertToRaw(content);
         post.append("content", JSON.stringify(content));
 
-        Axios.post('/api/blog/new', post, options(this.props.token))
-            .then(() => {
-                this.props.history.push('/');
-            })
-            .catch(err => {
-                console.log(err);
-            });
+        postNewPostAsync(post, this.props.token).then(data => {
+            this.props.history.push('/');
+            toast("Post created successfully!", { type: toast.TYPE.SUCCESS });
+        });
     }
 
     render() {

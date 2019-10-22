@@ -1,8 +1,15 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using SimplyBlog.Core.Concrete;
+using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Models;
-using SimplyBlog.Website.Models.Response;
+using SimplyBlog.Website.Models.DTOs;
 
 namespace SimplyBlog.Website.Controllers
 {
@@ -11,16 +18,18 @@ namespace SimplyBlog.Website.Controllers
     public class AdminController : ControllerBase
     {
         private readonly AppService service;
+        private readonly ILogger<AdminController> logger;
 
-        public AdminController(AppService service)
+        public AdminController(AppService service, ILogger<AdminController> logger)
         {
             this.service = service;
+            this.logger = logger;
         }
 
         [HttpPost("auth")]
         public ActionResult Authenticate(LoginModel model)
         {
-            LoginResponse response = service.Authenticate(model.Username, model.Password);
+            LoginResponseDto response = service.Authenticate(model.Username, model.Password);
 
             if (response.Error != null)
             {
@@ -31,27 +40,56 @@ namespace SimplyBlog.Website.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("changePassword/{value}")]
-        public ActionResult ChangePassword(string value)
+        [HttpPost("credential")]
+        public ActionResult ChangePassword(CredentialRequestDto model)
         {
-            service.ChangePassword(value);
+            service.UpdateCredential(model);
             return Ok();
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("changeLogin/{value}")]
-        public ActionResult ChangeLogin(string value)
+        [HttpPost("about")]
+        public async Task<ActionResult> UpdateAbout([FromForm]AboutRequestDto model)
         {
-            service.ChangeLogin(value);
+            await service.UpdateAbout(model);
             return Ok();
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPost("changeSecret/{value}")]
-        public ActionResult ChangeSecret(string value)
+        [HttpPost("header")]
+        public async Task<ActionResult> UpdateHeader(IFormFile image)
         {
-            service.ChangeSecret(value);
+            Guid? imageId = await service.UpdateHeader(image);
+            return Ok(ImageHandler.GetImageUri(GetHostPath(), imageId));
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("upload")]
+        public async Task<ActionResult> UploadImage(IFormFile image)
+        {
+            string url = await service.UploadImage(GetHostPath(), image);
+            return Ok(url);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet("images")]
+        public ActionResult GetImages()
+        {
+            IEnumerable<ImageDto> images = service.GetImages(GetHostPath());
+            return Ok(images);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete("images/{id}")]
+        public ActionResult DeleteImage(Guid id)
+        {
+            service.DeleteImage(id);
             return Ok();
+        }
+
+        private string GetHostPath()
+        {
+            return new Uri(string.Concat(HttpContext.Request.Scheme, "://", HttpContext.Request.Host.Value)).ToString();
         }
     }
 }

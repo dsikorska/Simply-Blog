@@ -6,7 +6,7 @@
 }
 
 .NavContent {
-  width: auto;
+  width: 100%;
   text-align: center;
   font-weight: bold;
   margin: auto;
@@ -29,7 +29,7 @@
   padding: 30px;
   font-size: 40px;
   text-align: center;
-  background: white;  
+  background: inherit;  
 }
 
 .Footer {
@@ -40,5 +40,7 @@
 }
 
 .Login {
-  display: inline;
+  display: inline-block;
+  width: 100%;
+  text-align: right;
 }

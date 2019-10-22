@@ -1,17 +1,18 @@
 import React, { Component } from 'react';
 import styles from './PostsList.module.css';
 import Auxiliary from '../../hoc/Auxiliary/Auxiliary';
-import ShortPost from './ShortPost/ShortPost';
-import Axios, { options } from '../../axios-api';
-import Spinner from '../UI/Spinner/Spinner';
+import ShortPost from '../../components/PostsList/ShortPost/ShortPost';
+import { deletePostAsync, getPostsAsync, getTagsAsync } from '../../httpClient';
+import Spinner from '../../components/UI/Spinner/Spinner';
 import { connect } from 'react-redux';
-import Button from './../UI/Button/Button';
+import Button from '../../components/UI/Button/Button';
 import { Link } from 'react-router-dom';
-import Panel from '../UI/Panel/Panel';
+import Panel from '../../components/UI/Panel/Panel';
 import ReactPaginate from 'react-paginate';
 import { EditorState, convertFromRaw } from 'draft-js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faTag } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 
 class PostsList extends Component {
     state = {
@@ -31,33 +32,27 @@ class PostsList extends Component {
 
     loadPosts = (page, category, reloadTags = false) => {
         this.setState({ loading: true });
-        Axios.get('/api/blog/posts/' + page + '/' + category)
-            .then(response => {
-                let posts = [];
-                response.data.data.forEach(post => {
-                    posts.push({
-                        ...post,
-                        content: EditorState
-                            .createWithContent(convertFromRaw(JSON.parse(post.content)))
-                            .getCurrentContent()
-                            .getPlainText()
-                    });
+        getPostsAsync(page, category).then(data => {
+            let posts = [];
+            data.data.forEach(post => {
+                posts.push({
+                    ...post,
+                    content: EditorState
+                        .createWithContent(convertFromRaw(JSON.parse(post.content)))
+                        .getCurrentContent()
+                        .getPlainText()
                 });
-
-                if (reloadTags) {
-                    Axios.get('/api/blog/tags')
-                        .then(tagsResponse => {
-                            this.setState({ posts: posts, tags: tagsResponse.data, maxPages: response.data.maxPages, loading: false });
-                        }).catch(err => {
-                            console.log(err);
-                        })
-                } else {
-                    this.setState({ posts: posts, maxPages: response.data.maxPages, loading: false });
-                }
-            })
-            .catch(err => {
-                console.log(err);
             });
+
+            if (reloadTags) {
+                getTagsAsync().then(tags => {
+                    this.setState({ posts: posts, tags: tags, maxPages: data.maxPages, loading: false });
+                });
+            } else {
+                this.setState({ posts: posts, maxPages: data.maxPages, loading: false });
+            }
+        });
+
     }
 
     onDeletePost = (id) => {
@@ -68,14 +63,11 @@ class PostsList extends Component {
         if (!window.confirm("Are you sure?")) {
             return;
         }
-
-        Axios.delete('/api/blog/' + id, options(this.props.token))
-            .then(response => {
-                this.loadPosts(this.state.currentPage, null, true);
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        this.setState({ loading: true });
+        deletePostAsync(id, this.props.token).then(data => {
+            this.loadPosts(this.state.currentPage, null, true);
+            toast("Post deleted successfully!", { type: toast.TYPE.WARNING });
+        });
     }
 
     onPageChangeHandler = (page) => {

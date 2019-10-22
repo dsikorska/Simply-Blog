@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
-using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
 
 namespace SimplyBlog.Website.Models.DTOs
 {
-    public class ReadPostDto : ReadShortPostDto
+    public class PostResponseDto : ShortPostResponseDto
     {
         public List<Comment> Comments { get; set; } = new List<Comment>();
 
-        public static explicit operator ReadPostDto(Post post)
+        public static explicit operator PostResponseDto(Post post)
         {
-            ReadPostDto result = new ReadPostDto()
+            PostResponseDto result = new PostResponseDto()
             {
                 Categories = post.Categories,
                 Content = post.Content,
@@ -20,8 +19,6 @@ namespace SimplyBlog.Website.Models.DTOs
                 Title = post.Title,
                 Comments = post.Comments
             };
-
-            result.ImageUri = ImageHandler.GetImageUri(post.ImageGuid);
 
             return result;
         }

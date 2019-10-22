@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import { toast } from 'react-toastify';
 
 export function options(token) {
     return {
@@ -9,7 +10,24 @@ export function options(token) {
 }
 
 const instance = Axios.create({
-    baseURL: 'https://simplyblog.azurewebsites.net'
+    baseURL: 'https://localhost:5001'
+});
+//    baseURL: 'https://simplyblog.azurewebsites.net'
+// baseURL: 'https://localhost:5001'
+export default instance;
+
+instance.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;
+}, function (error) {
+    console.log(error);
+    return Promise.reject(error);
 });
 
-export default instance;
+instance.interceptors.response.use(function (response) {
+    // Do something with response data
+    return response;
+}, function (error) {
+    toast(error.response.data.Error, { type: toast.TYPE.ERROR });
+    return Promise.reject(error);
+});

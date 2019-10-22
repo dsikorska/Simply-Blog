@@ -1,42 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using SimplyBlog.Core.Concrete;
+using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Configuration;
-using SimplyBlog.Website.Models.Response;
+using SimplyBlog.Website.Models.DTOs;
 
 namespace SimplyBlog.Website
 {
     public class AppService
     {
-        private readonly IWritableOptions<Credentials> writableCredentials;
-        private readonly IWritableOptions<Secret> writableSecret;
+        private readonly IWritableOptions<CredentialWritableOption> writableCredential;
+        private readonly IWritableOptions<AboutWritableOption> writableAbout;
+        private readonly IWritableOptions<HeaderWritableOption> writableHeader;
 
-        public AppService(IWritableOptions<Credentials> writableCredentials, IWritableOptions<Secret> writableSecret)
+        public AppService(
+            IWritableOptions<CredentialWritableOption> writableCredentials,
+            IWritableOptions<AboutWritableOption> writableAbout,
+            IWritableOptions<HeaderWritableOption> writableHeader)
         {
-            this.writableCredentials = writableCredentials;
-            this.writableSecret = writableSecret;
+            this.writableCredential = writableCredentials;
+            this.writableAbout = writableAbout;
+            this.writableHeader = writableHeader;
         }
 
-        public LoginResponse Authenticate(string username, string password)
+        public LoginResponseDto Authenticate(string username, string password)
         {
             if (!ValidateUser(username, password))
             {
-                return new LoginResponse()
+                return new LoginResponseDto()
                 {
                     Error = "Invalid Username or Password."
                 };
             }
 
-            byte[] key = Encoding.ASCII.GetBytes(writableSecret.Value.Value);
-            LoginResponse response = GetSecurityToken(key, username);
+            byte[] key = Encoding.ASCII.GetBytes(writableCredential.Value.Secret);
+            LoginResponseDto response = GetSecurityToken(key, username);
 
             return response;
         }
 
-        private LoginResponse GetSecurityToken(byte[] key, string username)
+        private LoginResponseDto GetSecurityToken(byte[] key, string username)
         {
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
@@ -52,7 +63,7 @@ namespace SimplyBlog.Website
             };
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            LoginResponse response = new LoginResponse()
+            LoginResponseDto response = new LoginResponseDto()
             {
                 Token = tokenHandler.WriteToken(token),
                 ExpirationDate = expDate
@@ -61,10 +72,10 @@ namespace SimplyBlog.Website
             return response;
         }
 
-        public bool ValidateUser(string username, string password)
+        private bool ValidateUser(string username, string password)
         {
-            string login = writableCredentials.Value.Login;
-            string hashPassword = writableCredentials.Value.Password;
+            string login = writableCredential.Value.Login;
+            string hashPassword = writableCredential.Value.Password;
 
             bool validPassword = VerifyPassword(hashPassword, password);
 
@@ -92,16 +103,6 @@ namespace SimplyBlog.Website
             return valid;
         }
 
-        public void ChangePassword(string newPassword)
-        {
-            string newHashedPassword = HashPassword(newPassword);
-
-            writableCredentials.Update(opt =>
-            {
-                opt.Password = newHashedPassword;
-            });
-        }
-
         //Ref: https://medium.com/@mehanix/lets-talk-security-salted-password-hashing-in-c-5460be5c3aae
         private static string HashPassword(string password)
         {
@@ -116,25 +117,90 @@ namespace SimplyBlog.Website
             return Convert.ToBase64String(hashBytes);
         }
 
-        public void ChangeLogin(string newLogin)
+        public void UpdateCredential(CredentialRequestDto credential)
         {
-            writableCredentials.Update(opt =>
+            string login, password, secret = null;
+            if (!string.IsNullOrWhiteSpace(credential.Login))
             {
-                opt.Login = newLogin;
+                login = credential.Login;
+            }
+            else
+            {
+                login = writableCredential.Value.Login;
+            }
+
+            if (!string.IsNullOrWhiteSpace(credential.Password))
+            {
+                password = HashPassword(credential.Password);
+            }
+            else
+            {
+                password = writableCredential.Value.Password;
+            }
+
+            if (!string.IsNullOrWhiteSpace(credential.Secret))
+            {
+                if (credential.Secret?.Length < 64)
+                {
+                    throw new ArgumentException("New secret must be at least 64 characters long.");
+                }
+
+                secret = credential.Secret;
+            }
+            else
+            {
+                secret = writableCredential.Value.Secret;
+            }
+
+            writableCredential.Update(opt =>
+            {
+                opt.Password = password;
+                opt.Login = login;
+                opt.Secret = secret;
             });
         }
 
-        public void ChangeSecret(string newSecret)
+        public async Task UpdateAbout(AboutRequestDto model, CancellationToken cancellationtoken = default(CancellationToken))
         {
-            if (newSecret.Length < 64)
+            Guid? imageId = writableAbout.Value.ImageId;
+
+            if (!model.UseExistingImage)
             {
-                throw new ArgumentException("New secret must be at least 64 characters long.");
+                imageId = await ImageHandler.SaveImageToFile(model.Image, cancellationtoken);
             }
 
-            writableSecret.Update(opt =>
+            writableAbout.Update(opt =>
             {
-                opt.Value = newSecret;
+                opt.About = model.About;
+                opt.ImageId = imageId;
             });
+        }
+
+        public async Task<Guid?> UpdateHeader(IFormFile image, CancellationToken cancellationtoken = default(CancellationToken))
+        {
+            Guid? imageId = await ImageHandler.SaveImageToFile(image, cancellationtoken);
+            writableHeader.Update(opt =>
+            {
+                opt.ImageId = imageId;
+            });
+
+            return imageId;
+        }
+
+        public async Task<string> UploadImage(string hostPath, IFormFile image, CancellationToken cancellationtoken = default(CancellationToken))
+        {
+            Guid? id = await ImageHandler.SaveImageToFile(image, cancellationtoken);
+            return ImageHandler.GetImageUri(hostPath, id);
+        }
+
+        public IEnumerable<ImageDto> GetImages(string hostPath)
+        {
+            return ImageHandler.GetAll(hostPath);
+        }
+
+        public void DeleteImage(Guid? id)
+        {
+            ImageHandler.DeleteImage(id);
         }
     }
 }

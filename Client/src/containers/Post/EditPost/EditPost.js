@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Axios, { options } from '../../../axios-api';
-import Button from './../../UI/Button/Button';
-import Panel from '../../UI/Panel/Panel';
-import Spinner from '../../UI/Spinner/Spinner';
-import Input from './../../UI/Input/Input';
-import RichTextbox from '../../UI/RichTextbox/RichTextbox';
+import Button from '../../../components/UI/Button/Button';
+import Panel from '../../../components/UI/Panel/Panel';
+import Input from '../../../components/UI/Input/Input';
+import Spinner from '../../../components/UI/Spinner/Spinner';
+import RichTextbox from '../../../components/UI/RichTextbox/RichTextbox';
 import { EditorState, convertToRaw, convertFromRaw } from 'draft-js';
 import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-toastify';
 
 class EditPost extends React.Component {
     state = {
@@ -138,9 +139,7 @@ class EditPost extends React.Component {
         Axios.patch('/api/blog/' + this.props.match.params.id, post, options(this.props.token))
             .then(response => {
                 this.props.history.push('/');
-            })
-            .catch(err => {
-                console.log(err);
+                toast("Data updated successfully!", { type: toast.TYPE.SUCCESS });
             });
     }
 
@@ -168,7 +167,7 @@ class EditPost extends React.Component {
                             </div>
                             {this.state.image ?
                                 <div className="Img">
-                                    <img src={Axios.defaults.baseURL + this.state.image} alt={this.state.form.title.value} />
+                                    <img src={this.state.image} alt={this.state.form.title.value} />
                                 </div> : null}
                         </div>
                         {formElements.map(element => (

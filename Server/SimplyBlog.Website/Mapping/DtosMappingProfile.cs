@@ -8,11 +8,11 @@ namespace SimplyBlog.Website.Mapping
     {
         public DtosMappingProfile()
         {
-            CreateMap<Post, EditPostDto>();
-            CreateMap<Post, NewPostDto>();
+            CreateMap<Post, PostEditRequestDto>();
+            CreateMap<Post, PostNewRequestDto>();
 
-            CreateMap<EditPostDto, Post>();
-            CreateMap<NewPostDto, Post>();
+            CreateMap<PostEditRequestDto, Post>();
+            CreateMap<PostNewRequestDto, Post>();
         }
     }
 }

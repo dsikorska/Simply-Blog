@@ -11,13 +11,6 @@ body {
   margin: auto;
 }
 
-/* Fake image */
-.fakeimg {
-  background-color: #aaa;
-  width: 100%;
-  padding: 20px;
-}
-
 form {
   width: 100%;
 }
@@ -63,9 +56,44 @@ form {
   height: auto;
 }
 
+.ButtonsGroup{
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .Container {
     width: 100%;
     text-align: center;
+}
+
+.FlexContainer {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.FlexImg {
+  max-width: 33%;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ced4da;
+}
+
+.FlexImg img {
+  max-width: 100%;
+}
+
+.Overlap {
+  position: absolute;
+}
+
+.Overlap button {
+  margin: 0 5px;
+}
+
+.FlexImg button {
+  text-align: right;
 }
 
 .Content {

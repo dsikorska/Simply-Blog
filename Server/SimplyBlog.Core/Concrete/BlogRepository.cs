@@ -62,14 +62,6 @@ namespace SimplyBlog.Core.Concrete
             return Entities.FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<Comment> GetAllComments(long id)
-        {
-            return Entities
-                .SelectMany(x => x.Comments)
-                .Where(x => x.PostId == id)
-                .OrderByDescending(x => x.Created);
-        }
-
         public void AddComment(Post post, Comment comment)
         {
             comment.PostId = post.Id;

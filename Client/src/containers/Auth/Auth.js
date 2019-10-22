@@ -3,7 +3,6 @@ import Input from './../../components/UI/Input/Input';
 import Button from './../../components/UI/Button/Button';
 import * as actions from '../../store/actions/index';
 import { connect } from 'react-redux';
-import Spinner from './../../components/UI/Spinner/Spinner';
 import { Redirect } from 'react-router-dom';
 import { faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -107,10 +106,6 @@ class Auth extends Component {
                 invalid={!element.config.valid}
                 touched={element.config.touched} />
         ));
-
-        if (this.props.loading) {
-            form = <Spinner />
-        }
 
         let errorMessage = null;
 

@@ -3,6 +3,7 @@ import styles from './Button.module.css';
 
 const button = (props) => (
     <button
+        style={props.style}
         type={props.type}
         disabled={props.disabled}
         className={[styles.Button, styles[props.btnType]].join(' ')}
