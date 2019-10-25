@@ -41,7 +41,7 @@ namespace SimplyBlog.Website.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("credential")]
-        public ActionResult ChangePassword(CredentialRequestDto model)
+        public ActionResult UpdateCredential(CredentialRequestDto model)
         {
             service.UpdateCredential(model);
             return Ok();
