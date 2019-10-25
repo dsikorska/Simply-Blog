@@ -14,6 +14,8 @@ There is only one user account - administrator. Default credentials:
 * Anonymous comments
 * XML storage 
 * Paging
+* Rich textbox based on Draft.js
+* Images manager (upload, delete, get link)
 
 ## Getting Started
 ### Prerequisites
@@ -29,25 +31,48 @@ Authorization: Bearer {token}
 ##### Administrator:
 * **Authenticate:** POST - allow anonymous user
 url: `/api/admin/auth`
-json: `{
+request body: `{
 	"username": "admin",
 	"password": "admin"
 }`
 
-* **Change Password:** POST - allow only authorized user
-url: `/api/admin/changePassword?value=newPassword`
-query parameters: 
-`value` | string; required | New password.
+* **Update Credentials:** POST - allow only authorized user
+url: `/api/admin/credential`
+request body: `{
+	"login": "admin",
+	"password": "admin",
+    "secret": "abcdefghijklmnoprstuwxyzabcdefghijklmnoprstuwxyzabcdefghijklmnoprstuwxyz"
+}`
+All parameters are optional. 
+**Secret must be at least than 64 characters long.**
 
-* **Change Login:** POST - allow only authorized user
-url: `/api/admin/changeLogin?value=newLogin`
-query parameters: 
-`value` | string; required | New login.
+* **Update About:** POST - allow only authorized user
+url: `/api/admin/about`
+request form: `{
+    "about": "Lorem ipsum...",
+    "useExistingImage": false,
+    "image": [file]
+}`
 
-* **Change Secret:** POST - allow only authorized user
-url: `/api/admin/changeSecret?value=abcdefghijklmnoprstuwxyzabcdefghijklmnoprstuwxyzabcdefghijklmnoprstuwxyz`
+* **Update Header Image:** POST - allow only authorized user
+url: `/api/admin/header`
+request: `{
+    "image": [file]
+}`
+
+* **Upload Image:** POST - allow only authorized user
+url: `/api/admin/upload`
+request: `{
+    "image": [file]
+}`
+
+* **Delete Image:** POST - allow only authorized user
+url: `/api/admin/images/{id}`
 query parameters: 
-`value` | string; required | New secret. It's used for authentication via JWT. **Must be longer than 64 characters.**
+`id` | string; required |
+
+* **Get all Uploaded Images:** POST - allow only authorized user
+url: `/api/admin/images`
 
 ##### Posts:
 * **Get posts:** GET - allow anonymous user
@@ -74,7 +99,7 @@ All parameters are required.
 url: `/api/blog/{id}}`
 
 ##### Comments:
-* **Get comments:** GET - allow anonymous user
+* **Get all post's comments:** GET - allow anonymous user
 url: `/api/blog/comments/{id}`
 query parameters: 
 `id` | guid; required | Post identifier.
@@ -88,6 +113,16 @@ query parameters:
 
 * **Delete comment:** DELETE - allow only authorized user
 url: `/api/blog/{postId}/{id}}`
+
+##### Utilities:
+* **Get header image:** GET - allow anonymous user
+url: `/api/blog/header`
+
+* **Get about section:** GET - allow anonymous user
+url: `/api/blog/about`
+
+* **Get all tags:** GET - allow anonymous user
+url: `/api/blog/tags`
 
 ## Built With
 ### Server side:

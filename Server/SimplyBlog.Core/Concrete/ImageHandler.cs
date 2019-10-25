@@ -12,7 +12,7 @@ namespace SimplyBlog.Core.Concrete
     {
         public static string BasePath { get { return Path.Combine(Environment.CurrentDirectory, @"Data"); } }
         public static string PublicPath { get { return @"/static"; } }
-        //todo remove ref to aspnetcore
+
         public static async Task<Guid?> SaveImageToFile(IFormFile image, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (image?.Length > 0)

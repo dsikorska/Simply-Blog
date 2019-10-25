@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SimplyBlog.Core.Abstract;
-using SimplyBlog.Core.Concrete;
 using SimplyBlog.Core.Models;
 using SimplyBlog.Website.Configuration;
 using SimplyBlog.Website.Models.DTOs;
@@ -25,20 +24,28 @@ namespace SimplyBlog.Website.Controllers
         private readonly IWritableOptions<AboutWritableOption> about;
         private readonly IWritableOptions<HeaderWritableOption> header;
         private readonly ILogger<BlogController> logger;
+        private readonly AppService service;
 
-        public BlogController(IBlogRepository repository, IMapper map, IWritableOptions<AboutWritableOption> about, IWritableOptions<HeaderWritableOption> header, ILogger<BlogController> logger)
+        public BlogController(
+            AppService service,
+            IBlogRepository repository,
+            IMapper map,
+            IWritableOptions<AboutWritableOption> about,
+            IWritableOptions<HeaderWritableOption> header,
+            ILogger<BlogController> logger)
         {
             blogRepository = repository;
             mapper = map;
             this.about = about;
             this.header = header;
             this.logger = logger;
+            this.service = service;
         }
 
         [HttpGet("header")]
         public ActionResult<string> GetHeader()
         {
-            return Ok(ImageHandler.GetImageUri(GetHostPath(), header.Value.ImageId));
+            return Ok(service.GetImage(GetHostPath(), header.Value.ImageId));
         }
 
         [HttpGet("about")]
@@ -47,7 +54,7 @@ namespace SimplyBlog.Website.Controllers
             return Ok(new AboutResponseDto
             {
                 About = about.Value.About,
-                ImageUri = ImageHandler.GetImageUri(GetHostPath(), about.Value.ImageId)
+                ImageUri = service.GetImage(GetHostPath(), about.Value.ImageId)
             });
         }
 
@@ -59,7 +66,7 @@ namespace SimplyBlog.Website.Controllers
             List<ShortPostResponseDto> mappedPosts = posts.Select(x =>
             {
                 ShortPostResponseDto mappedPost = (ShortPostResponseDto)x;
-                mappedPost.ImageUri = ImageHandler.GetImageUri(GetHostPath(), x.ImageGuid);
+                mappedPost.ImageUri = service.GetImage(GetHostPath(), x.ImageGuid);
                 return mappedPost;
             }).ToList();
 
@@ -90,13 +97,13 @@ namespace SimplyBlog.Website.Controllers
                 if (shortPost)
                 {
                     ShortPostResponseDto result = (ShortPostResponseDto)post;
-                    result.ImageUri = ImageHandler.GetImageUri(GetHostPath(), post.ImageGuid);
+                    result.ImageUri = service.GetImage(GetHostPath(), post.ImageGuid);
                     return Ok(result);
                 }
                 else
                 {
                     PostResponseDto result = (PostResponseDto)post;
-                    result.ImageUri = ImageHandler.GetImageUri(GetHostPath(), post.ImageGuid);
+                    result.ImageUri = service.GetImage(GetHostPath(), post.ImageGuid);
                     return Ok(result);
                 }
             }
@@ -127,7 +134,7 @@ namespace SimplyBlog.Website.Controllers
             }
 
             Post newPost = mapper.Map<Post>(post);
-            newPost.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+            newPost.ImageGuid = await service.SaveImageToFile(post.Image);
             newPost.Categories = newPost.Categories[0]?.Split(',').ToList();
             newPost.Categories = newPost.Categories?.Distinct().ToList();
             blogRepository.Create(newPost);
@@ -149,7 +156,7 @@ namespace SimplyBlog.Website.Controllers
             {
                 if (!post.UseExistingImage)
                 {
-                    p.ImageGuid = await ImageHandler.SaveImageToFile(post.Image);
+                    p.ImageGuid = await service.SaveImageToFile(post.Image);
                 }
                 p.Categories = post.Categories[0]?.Split(',').ToList();
                 p.Categories = p.Categories?.Distinct().ToList();
@@ -173,7 +180,7 @@ namespace SimplyBlog.Website.Controllers
 
             if (post != null)
             {
-                ImageHandler.DeleteImage(post.ImageGuid);
+                service.DeleteImage(post.ImageGuid);
                 blogRepository.Delete(post);
                 return Ok();
             }

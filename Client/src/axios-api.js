@@ -28,6 +28,10 @@ instance.interceptors.response.use(function (response) {
     // Do something with response data
     return response;
 }, function (error) {
-    toast(error.response.data.Error, { type: toast.TYPE.ERROR });
+    if (error.response) {
+        toast(error.response.data.Error, { type: toast.TYPE.ERROR });
+    } else {
+        toast("Sorry, there is server connection problem.", { type: toast.TYPE.ERROR });
+    }
     return Promise.reject(error);
 });

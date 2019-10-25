@@ -202,5 +202,15 @@ namespace SimplyBlog.Website
         {
             ImageHandler.DeleteImage(id);
         }
+
+        public string GetImage(string hostPath, Guid? id)
+        {
+            return ImageHandler.GetImageUri(hostPath, id);
+        }
+
+        public async Task<Guid?> SaveImageToFile(IFormFile img)
+        {
+            return await ImageHandler.SaveImageToFile(img);
+        }
     }
 }
